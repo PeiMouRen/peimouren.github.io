@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      FastDFS入门 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">FastDFS入门</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-10 18:39:41
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                    <b>#</b> 中间件
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                    <b>#</b> 分布式文件存储
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/FastDFS/" title="FastDFS">
+                    <b>#</b> FastDFS
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[TOC]</p>
+<h1 id="1-fastdfs简介"><a href="#1-fastdfs简介" class="headerlink" title="1. fastdfs简介"></a>1. fastdfs简介</h1><blockquote>
+<p>​		FastDFS是一款开源的分布式文件系统，功能主要包括：文件存储、文件同步、文件访问（文件上传、文件下载）等，解决了文件大容量存储和高性能访问的问题。FastDFS特别适合以文件为载体的在线服务，如图片、视频、文档等等。</p>
+<p>​		FastDFS作为一款轻量级分布式文件系统，版本V6.01代码量6.3万行。FastDFS用C语言实现，支持Linux、FreeBSD、MacOS等类UNIX系统。FastDFS类似google FS，属于应用级文件系统，不是通用的文件系统，只能通过专有API访问，目前提供了C和Java SDK，以及PHP扩展SDK。</p>
+<p>​		FastDFS为互联网应用量身定做，解决大容量文件存储问题，追求高性能和高扩展性。FastDFS可以看做是基于文件的key value存储系统，key为文件ID，value为文件内容，因此称作分布式文件存储服务更为合适。</p>
+</blockquote>
+<h2 id="1-1-特点"><a href="#1-1-特点" class="headerlink" title="1.1. 特点"></a>1.1. 特点</h2><ul>
+<li>分组存储，简单灵活；</li>
+<li>对等结构，不存在单点；</li>
+<li>文件ID由FastDFS生成，作为文件访问凭证。FastDFS不需要传统的name server或meta server；</li>
+<li>大、中、小文件均可以很好支持，可以存储海量小文件；</li>
+<li>一台storage支持多块磁盘，支持单盘数据恢复；</li>
+<li>提供了nginx扩展模块，可以和nginx无缝衔接；</li>
+<li>支持多线程方式上传和下载文件，支持断点续传；</li>
+<li>存储服务器上可以保存文件附加属性;</li>
+</ul>
+<h2 id="1-2-设计理念"><a href="#1-2-设计理念" class="headerlink" title="1.2. 设计理念"></a>1.2. 设计理念</h2><p>​		FastDFS 系统有三个角色：跟踪服务器(Tracker Server)、存储服务器(Storage Server)和客户端(Client)。</p>
+<p>　　<strong>Tracker Server</strong>：跟踪服务器，主要做调度工作，起到均衡的作用；负责管理所有的 storage server和 group，每个 storage 在启动后会连接 Tracker，告知自己所属 group 等信息，并保持周期性心跳。通过Tracker server在文件上传时可以根据一些策略找到Storage server提供文件访问服务。</p>
+<p>　　<strong>Storage Server</strong>：存储服务器，主要提供容量和备份服务；以 group 为单位，每个 group 内可以有多台 storage server，数据互为备份。Storage server没有实现自己的文件系统而是利用操作系统 的文件系统来管理文件。</p>
+<p>　　<strong>Client</strong>：客户端，上传下载数据的服务器，也就是我们自己的项目所部署在的服务器。</p>
+<h2 id="1-3-文件交互过程"><a href="#1-3-文件交互过程" class="headerlink" title="1.3. 文件交互过程"></a>1.3. 文件交互过程</h2><h3 id="1-3-1-上传文件"><a href="#1-3-1-上传文件" class="headerlink" title="1.3.1 上传文件"></a>1.3.1 上传文件</h3><ol>
+<li><p>tracker server收到上传请求后，查询可用的storage server，并返回给client；</p>
+</li>
+<li><p>client直接跟storage server建立连接，进行文件上传；</p>
+</li>
+<li><p>storage server生成文件id返回给client；</p>
+</li>
+</ol>
+<p><img src="/fastdfs%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E8%BF%87%E7%A8%8B.png" alt="fastdfs上传文件过程"></p>
+<h3 id="1-3-2-下载文件"><a href="#1-3-2-下载文件" class="headerlink" title="1.3.2 下载文件"></a>1.3.2 下载文件</h3><ol>
+<li>tracker server收到下载请求后，查询可用的storage server，并返回给client；</li>
+<li>client与storage server建立连接，并附带文件id；</li>
+<li>storage server根据文件id查找文件，并将文件返回给client；</li>
+</ol>
+<p><img src="/fastdfs%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6%E8%BF%87%E7%A8%8B.jpg" alt="fastdfs下载文件过程"></p>
+<h2 id="1-4-架构图"><a href="#1-4-架构图" class="headerlink" title="1.4. 架构图"></a>1.4. 架构图</h2><p><img src="/fastdfs%E6%9E%B6%E6%9E%84%E5%9B%BE.png" alt="fastdfs架构图"></p>
+<h2 id="1-5-名词解释"><a href="#1-5-名词解释" class="headerlink" title="1.5. 名词解释"></a>1.5. 名词解释</h2><p><strong>tracker server</strong>：中心服务器，FastDFS server端两大主角之一。tracker server作为FastDFS集群管理中心，管								理集群拓扑结构，对storage server文件上传和文件下载起到负载均衡调度作用。使用命令								fdfs_monitor可以查看集群状态。</p>
+<p><strong>storage server</strong>：存储服务器，FastDFS server端两大主角之一。文件相关功能都通过storage server来完成，包								括文件上传、下载、文件同步等等。</p>
+<p><strong>文件ID</strong>：上传文件时由storage server生成访问该文件的凭证，包括group名称、存储路径顺序号以及包含两级目				录的文件名，应用程序（调用方）需要将文件ID保存到数据库等存储介质中。</p>
+<p>​				<img src="/fastdfs%E6%96%87%E4%BB%B6id%E8%AF%A6%E8%A7%A3.png" alt="fastdfs文件id详解"></p>
+<p><strong>group</strong>：FastDFS采用了分组存储方式，storage集群由一个或多个组构成，storage集群存储总容量为storage集				群中所有组的存储容量之和；一个组由一台或多台storage存储服务器组成，同组内的多台Storage 				server之间是类似RAID1的互备关系，同组存储服务器上的文件是完全一致的。文件上传、下载、删除等				操作可以在组内任意一台Storage server上进行。类似木桶短板效应，一个组的存储容量为该组内存储服				务器容量最小的那个。</p>
+<p>​	</p>
+<h1 id="2-fastdfs单机环境搭建"><a href="#2-fastdfs单机环境搭建" class="headerlink" title="2. fastdfs单机环境搭建"></a>2. fastdfs单机环境搭建</h1><h2 id="2-1-说明"><a href="#2-1-说明" class="headerlink" title="2.1. 说明"></a>2.1. 说明</h2><p>若安装过程中提示没有权限，可切换到root用户进行安装。</p>
+<p>单机环境下，服务器同时担任tracker角色和storage角色，需要安装的应用及其对应的说明如下：</p>
+<ul>
+<li><p><strong>libfastcommon</strong>：fastdfs依赖的函数库；</p>
+<blockquote>
+<p>c common functions library extracted from my open source project FastDFS. this library is very simple and stable. functions including: string, logger, chain, hash, socket, ini file reader, base64 encode &#x2F; decode, url encode &#x2F; decode, fast timer, skiplist, object pool etc. detail info please see the c header files.</p>
+</blockquote>
+</li>
+<li><p><strong>libserverframe</strong>：从FastDFS继承过来的网络服务框架库，FastDFS6.0.9版本及后续版本后需要安装这个。</p>
+</li>
+<li><p><strong>fastdfs</strong>：分布式文件系统；</p>
+</li>
+<li><p><strong>fastdfs-nginx-module</strong>：nginx的一个扩展模块，用来解决<strong>storage cluster同组内文件异步复制带来延											迟导致文件访问不到</strong>问题，该模块需要与nginx配合使用；</p>
+</li>
+<li><p><strong>nginx</strong>：负载均衡服务器，在storage server上与fastdfs-nginx-module配合使用；在tracker server上只是将请求转发到storage server；</p>
+</li>
+</ul>
+<p><strong><font color="red">注意：fastdfs-nginx-module主要是解决storage cluster集群的问题，若集群环境下，tracker cluster中的服务器无需安装。</font></strong></p>
+<h2 id="2-2-版本"><a href="#2-2-版本" class="headerlink" title="2.2. 版本"></a>2.2. 版本</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">linux:centos7</span><br><span class="line">libfastcommon:1.0.62</span><br><span class="line">libserverframe：1.1.21</span><br><span class="line">fastdfs:6.09</span><br><span class="line">fastdfs-nginx-module:1.23</span><br><span class="line">nginx:1.22.0</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-资源下载"><a href="#2-3-资源下载" class="headerlink" title="2.3. 资源下载"></a>2.3. 资源下载</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># libfastcommon下载地址</span><br><span class="line">https://github.com/happyfish100/libfastcommon/tags</span><br><span class="line"># libserverframe下载地址</span><br><span class="line">https://github.com/happyfish100/libserverframe/tags</span><br><span class="line"># fastdfs下载地址</span><br><span class="line">https://github.com/happyfish100/fastdfs/tags</span><br><span class="line"># fastdfs-nginx-module下载地址</span><br><span class="line">https://github.com/happyfish100/fastdfs-nginx-module/tags</span><br><span class="line"># nginx下载地址</span><br><span class="line">http://nginx.org/</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-编译环境"><a href="#2-4-编译环境" class="headerlink" title="2.4. 编译环境"></a>2.4. 编译环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc gcc-c++ kernel-devel make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel wget vim -y</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5-安装"><a href="#2-5-安装" class="headerlink" title="2.5. 安装"></a>2.5. 安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装libfastcommon</span></span><br><span class="line">tar -zxvf libfastcommon-1.0.62.tar.gz</span><br><span class="line"><span class="built_in">cd</span> libfastcommon-1.0.62</span><br><span class="line">./make.sh &amp;&amp; ./make.sh install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装libserverframe</span></span><br><span class="line">tar -zxvf libserverframe-1.1.21.tar.gz</span><br><span class="line"><span class="built_in">cd</span> libserverframe-1.1.21</span><br><span class="line">./make.sh &amp;&amp; ./make.sh install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装fastdfs</span></span><br><span class="line">tar -zxvf fastdfs-6.09.tar.gz</span><br><span class="line"><span class="built_in">cd</span> fastdfs-6.09</span><br><span class="line">./make.sh &amp;&amp; ./make.sh install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装fastdfs-nginx-module（解压即可，后续安装nginx时会用到）</span></span><br><span class="line">tar -zxvf fastdfs-nginx-module-1.23.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装nginx</span></span><br><span class="line">tar -zxvf nginx-1.22.0.tar.gz</span><br><span class="line"><span class="built_in">cd</span> nginx-1.22.0</span><br><span class="line"><span class="comment"># 添加配置（集群环境下在tracker server上安装时无需加--add-module参数）</span></span><br><span class="line"><span class="comment"># --add-module后面的路径换成自己安装fastdfs-nginx-module下的src目录</span></span><br><span class="line"><span class="comment"># nginx会默认安装到/usr/local/nginx目录</span></span><br><span class="line">./configure --add-module=/usr/local/fastdfs/fastdfs-nginx-module-1.23/src/</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-6-编辑配置文件"><a href="#2-6-编辑配置文件" class="headerlink" title="2.6. 编辑配置文件"></a>2.6. 编辑配置文件</h2><h3 id="2-6-1-说明"><a href="#2-6-1-说明" class="headerlink" title="2.6.1. 说明"></a>2.6.1. 说明</h3><p>上述资源安装完毕后，会在<code>/etc/fdfs/</code>目录下生成相应的配置文件，各文件含义如下：</p>
+<ul>
+<li><p><strong>client.conf</strong>：客户端配置文件，在服务器上使用该文件可直接上传资源，无需借助客户端（java、C等）工具。</p>
+</li>
+<li><p><strong>tracker.conf</strong>：tracker server相关的配置文件；</p>
+</li>
+<li><p><strong>storage.conf</strong>：storage server相关的配置文件；</p>
+</li>
+<li><p><strong>storage_ids.conf</strong>：storage server的id配置文件，可将storage server的group name和ip映射为id；该文件默认不生效，需在tracker.conf中指定<code>use_storage_id</code>为<code>true</code>，且<code>storage_ids_filename</code>为该文件的name才可使用；</p>
+</li>
+</ul>
+<p>除了上述配置文件外，<code>storage server</code>还需要在<code>/etc/fdfs/</code>目录下手动添加以下几个配置文件：</p>
+<ul>
+<li><p><strong>http.conf</strong>：http配置文件，从<code>fastdfs</code>安装目录下的<code>conf/</code>中复制过来即可，后续开启[防盗链](#6.2. 防盗链)时，需要配置；</p>
+</li>
+<li><p><strong>mime.types</strong>：http配置文件，从<code>fastdfs</code>安装目录下的<code>conf/</code>中复制过来即可，后续无需配置；</p>
+</li>
+<li><p><strong>mod_fastdfs.conf</strong>：<code>fastdfs-nginx-module</code>配置文件，从<code>fastdfs-nginx-module</code>安装目录下的<code>src/</code>中复制过来即可；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加storage server需要使用的配置文件</span></span><br><span class="line"><span class="comment"># 注意文件路径替换成自己的</span></span><br><span class="line"><span class="built_in">cp</span> /usr/local/fastdfs/fastdfs-6.09/conf/http.conf /etc/fdfs/</span><br><span class="line"><span class="built_in">cp</span> /usr/local/fastdfs/fastdfs-6.09/conf/mime.types /etc/fdfs/</span><br><span class="line"><span class="built_in">cp</span> /usr/local/fastdfs/fastdfs-nginx-module-1.23/src/mod_fastdfs.conf /etc/fdfs/</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-6-2-配置client-conf"><a href="#2-6-2-配置client-conf" class="headerlink" title="2.6.2. 配置client.conf"></a>2.6.2. 配置client.conf</h3><p><strong><font color="red">非必须，直接在服务器上使用命令上传文件时再配置即可。</font></strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要配置以下几项</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存储日志的目录，默认为/home/yuqing/fastdfs,该目录需要手动创建</span></span><br><span class="line">base_path = /home/yuqing/fastdfs</span><br><span class="line"><span class="comment"># tracker server的地址，tracker cluster时可指定多个</span></span><br><span class="line">tracker_server = 192.168.5.112:22122</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-3-配置tracker-conf"><a href="#2-6-3-配置tracker-conf" class="headerlink" title="2.6.3. 配置tracker.conf"></a>2.6.3. 配置tracker.conf</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要配置以下几项</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否禁用配置文件，默认为false</span></span><br><span class="line">disabled = <span class="literal">false</span></span><br><span class="line"><span class="comment"># tracker server端口号，默认为22122</span></span><br><span class="line">port = 22122</span><br><span class="line"><span class="comment"># 存储数据和日志的目录，默认为/home/yuqing/fastdfs,该目录需要手动创建</span></span><br><span class="line">base_path = /home/yuqing/fastdfs</span><br><span class="line"><span class="comment"># http服务端口号，默认为8080</span></span><br><span class="line">http.server_port = 8080</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-4-配置storage-conf"><a href="#2-6-4-配置storage-conf" class="headerlink" title="2.6.4. 配置storage.conf"></a>2.6.4. 配置storage.conf</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># storage详细配置列表（配置文件中也有详细的注释）</span><br><span class="line">https://github.com/happyfish100/fastdfs/wiki/Configuration#storage</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要配置以下几项</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否禁用配置文件，默认为false</span></span><br><span class="line">disabled = <span class="literal">false</span></span><br><span class="line"><span class="comment"># 本机storage server所在的组</span></span><br><span class="line">group_name = group1</span><br><span class="line"><span class="comment"># storage server端口号，默认为23000</span></span><br><span class="line">port = 23000</span><br><span class="line"><span class="comment"># 存储数据和日志的目录，默认为/home/yuqing/fastdfs,该目录需要手动创建</span></span><br><span class="line">base_path = /home/yuqing/fastdfs</span><br><span class="line"><span class="comment"># 存储路径个数，默认为1</span></span><br><span class="line">store_path_count = 1</span><br><span class="line"><span class="comment"># 存储路径，根据store_path_count的个数可指定多个，如store_path1、store_path2...</span></span><br><span class="line">store_path0 = /home/yuqing/fastdfs</span><br><span class="line"><span class="comment"># tracker server的地址，tracker cluster时可指定多个</span></span><br><span class="line">tracker_server = 192.168.5.112:22122</span><br><span class="line"><span class="comment"># http服务端口号，默认为8888</span></span><br><span class="line">http.server_port = 8888</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-5-配置mod-fastdfs-conf"><a href="#2-6-5-配置mod-fastdfs-conf" class="headerlink" title="2.6.5. 配置mod_fastdfs.conf"></a>2.6.5. 配置mod_fastdfs.conf</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要配置以下几项</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存储日志文件的目录，默认为/tmp</span></span><br><span class="line">base_path=/tmp</span><br><span class="line"><span class="comment"># tracker server的地址，tracker cluster时可指定多个</span></span><br><span class="line">tracker_server=192.168.5.112:22122</span><br><span class="line"><span class="comment"># storage server端口号，默认为23000</span></span><br><span class="line">storage_server_port=23000</span><br><span class="line"><span class="comment"># 本机storage server所在的组</span></span><br><span class="line">group_name=group1</span><br><span class="line"><span class="comment"># 返回的文件id中是否含有group name，默认为false，这里改成true	</span></span><br><span class="line">url_have_group_name = <span class="literal">true</span></span><br><span class="line"><span class="comment"># 存储路径个数，默认为1，需要与本机storage.conf中的配置一致</span></span><br><span class="line">store_path_count=1</span><br><span class="line"><span class="comment"># 存储路径，根据store_path_count的个数可指定多个，如store_path1、store_path2...</span></span><br><span class="line"><span class="comment"># 需要与本机storage.conf中的配置一致</span></span><br><span class="line">store_path0=/home/yuqing/fastdfs</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-6-配置nginx-conf"><a href="#2-6-6-配置nginx-conf" class="headerlink" title="2.6.6. 配置nginx.conf"></a>2.6.6. 配置nginx.conf</h3><p><strong>注意：由于<code>storage server</code>上配置了<code>fastdfs-nginx-module</code>，所以需要将访问资源的请求<code>/group[0-9]</code>转发到<code>ngx_fastdfs_module</code>处理；而<code>tracker server</code>只需将访问资源的请求转发到<code>storage server</code>即可；</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑nginx.conf</span></span><br><span class="line">vi /usr/local/nginx/conf/nginx.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># storage server上的nginx配置</span></span><br><span class="line"><span class="comment"># 主要调整listen和location</span></span><br><span class="line"><span class="comment"># 注意，这里的8888端口号要与/etc/fdfs/storage.conf中http.server_port的配置保持一致</span></span><br><span class="line">http &#123;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       8888;    <span class="comment">## 该端口为storage.conf中的http.server_port相同</span></span><br><span class="line">        server_name  localhost;</span><br><span class="line">        location ~/group[0-9]/ &#123;</span><br><span class="line">            ngx_fastdfs_module;</span><br><span class="line">        &#125;</span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">        root   html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># tracker server上的nginx配置</span></span><br><span class="line">http &#123;</span><br><span class="line"></span><br><span class="line">	upstream fastdfs_group_server &#123;</span><br><span class="line">        server 192.168.5.110:8888;</span><br><span class="line">        server 192.168.5.111:8888;</span><br><span class="line">	&#125;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;    </span><br><span class="line">        server_name  localhost;</span><br><span class="line">        location ~/group[0-9]/ &#123;</span><br><span class="line">            proxy_pass http://fastdfs_group_server;</span><br><span class="line">        &#125;</span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">        root   html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-7-测试搭建结果"><a href="#2-7-测试搭建结果" class="headerlink" title="2.7. 测试搭建结果"></a>2.7. 测试搭建结果</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动tracker、storage和nginx</span></span><br><span class="line">fdfs_trackerd /etc/fdfs/tracker.conf start</span><br><span class="line">fdfs_storaged /etc/fdfs/storage.conf start</span><br><span class="line">/usr/local/nginx/sbin/nginx</span><br><span class="line"><span class="comment"># 查看fdfs集群状态</span></span><br><span class="line">fdfs_monitor /etc/fdfs/storage.conf</span><br><span class="line"><span class="comment"># 上传文件</span></span><br><span class="line">fdfs_upload_file /etc/fdfs/storage.conf /usr/local/1.jpg</span><br><span class="line"><span class="comment"># 返回如下文件id</span></span><br><span class="line">group1/M00/00/00/wKgFbmJeWImAVvMQAADX1NYCr6c251.jpg</span><br><span class="line"><span class="comment"># 关闭防火墙（或者开放端口tracker server和storage server占用的端口）</span></span><br><span class="line">systemctl stop firewalld</span><br><span class="line"><span class="comment"># 通过浏览器获取上传的资源</span></span><br><span class="line">http://192.168.5.112:8888/group1/M00/00/00/wKgFbmJeWImAVvMQAADX1NYCr6c251.jpg</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-fastdfs集群环境搭建"><a href="#3-fastdfs集群环境搭建" class="headerlink" title="3. fastdfs集群环境搭建"></a>3. fastdfs集群环境搭建</h1><h2 id="3-1-说明"><a href="#3-1-说明" class="headerlink" title="3.1. 说明"></a>3.1. 说明</h2><p>​		使用6台机器搭建集群，6台机器分别为node1、node2、node3、node4、node5、node6，其中node1和node2为tracker server，其他4台机器都为storage server，node3和node4为group1，node5和node6为group2。</p>
+<p>​		6台机器分别安装好<strong>单机部署</strong>所述资源（<code>tracker server</code>不用安装<code>fastdfs-nginx-module</code>）；</p>
+<p><img src="/fastdfs%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84v2.png" alt="fastdfs搭建集群架构"></p>
+<h2 id="3-2-tracker-conf配置"><a href="#3-2-tracker-conf配置" class="headerlink" title="3.2. tracker.conf配置"></a>3.2. tracker.conf配置</h2><p>两台<code>tracker server</code>上的<code>/etc/fdfs/tracker.conf</code>配置同<strong>单机部署</strong>，示例见下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">disabled = <span class="literal">false</span></span><br><span class="line">port = 22122</span><br><span class="line">base_path = /home/yuqing/fastdfs</span><br><span class="line">http.server_port = 8080</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-storage-conf配置"><a href="#3-3-storage-conf配置" class="headerlink" title="3.3. storage.conf配置"></a>3.3. storage.conf配置</h2><p>四台<code>storage server</code>上的<code>/etc/fdfs/storage.conf</code>与单机有两处不同：</p>
+<ul>
+<li><code>group_name</code>需要特殊指定，即两个节点指定为<code>group1</code>，另外两个节点指定为<code>grorup2</code>;</li>
+<li><code>tracker_server</code>需要指定多个（如果存在多个的话）；</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">disabled = <span class="literal">false</span></span><br><span class="line"><span class="comment"># node3和node4指定为group1，node5和node6指定为group2</span></span><br><span class="line">group_name = group1</span><br><span class="line">port = 23000</span><br><span class="line">base_path = /home/yuqing/fastdfs</span><br><span class="line">store_path_count = 1</span><br><span class="line">store_path0 = /home/yuqing/fastdfs</span><br><span class="line"><span class="comment"># 存在多个tracker server时需全部配置</span></span><br><span class="line">tracker_server = node1:22122</span><br><span class="line">tracker_server = node2:22122</span><br><span class="line">http.server_port = 8888</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-mod-fastdfs-conf配置"><a href="#3-4-mod-fastdfs-conf配置" class="headerlink" title="3.4. mod_fastdfs.conf配置"></a>3.4. mod_fastdfs.conf配置</h2><p>四台<code>storage server</code>上的<code>/etc/fdfs/mod_fastdfs.conf</code>与<code>/etc/fdfs/storage.conf</code>类似，同样是<code>group_name</code>和<code>tracker_server</code>的配置与<strong>单机</strong>稍有不同：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">base_path=/tmp</span><br><span class="line"><span class="comment"># 存在多个tracker server时需全部配置</span></span><br><span class="line">tracker_server = node1:22122</span><br><span class="line">tracker_server = node2:22122</span><br><span class="line">storage_server_port=23000</span><br><span class="line"><span class="comment"># node3和node4指定为group1，node5和node6指定为group2</span></span><br><span class="line">group_name=group1</span><br><span class="line">url_have_group_name = <span class="literal">true</span></span><br><span class="line">store_path_count=1</span><br><span class="line">store_path0=/home/yuqing/fastdfs</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-5-测试搭建结果"><a href="#3-5-测试搭建结果" class="headerlink" title="3.5. 测试搭建结果"></a>3.5. 测试搭建结果</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动两台tracker server</span></span><br><span class="line">fdfs_trackerd /etc/fdfs/tracker.conf start</span><br><span class="line"><span class="comment"># 启动四台storage server</span></span><br><span class="line">fdfs_storaged /etc/fdfs/storage.conf start</span><br><span class="line"><span class="comment"># 启动nginx</span></span><br><span class="line">/usr/local/nginx/sbin/nginx -s reload</span><br><span class="line"><span class="comment"># 查看集群状态</span></span><br><span class="line">fdfs_monitor /etc/fdfs/storage.conf</span><br><span class="line"><span class="comment"># 在node1上上传11.jpg</span></span><br><span class="line">fdfs_upload_file /etc/fdfs/client.conf /usr/local/11.jpg</span><br><span class="line"><span class="comment"># 返回11.jpg文件id</span></span><br><span class="line">group2/M00/00/00/wKgFbmJfdTyAUnbkAAFLdk23Zbg817.jpg</span><br><span class="line"><span class="comment"># 在node2上上传22.jpg</span></span><br><span class="line">fdfs_upload_file /etc/fdfs/client.conf /usr/local/22.jpg</span><br><span class="line"><span class="comment"># 返回22.jpg文件id</span></span><br><span class="line">group1/M00/00/00/wKgFb2JfdVGASCFEAAAz0tyYoGo988.jpg</span><br><span class="line"><span class="comment"># 浏览器访问上传的资源</span></span><br><span class="line">http://192.168.5.11:8888/group1/M00/00/00/wKgFb2JfdVGASCFEAAAz0tyYoGo988.jpg</span><br><span class="line">http://192.168.5.11:8888/group2/M00/00/00/wKgFbmJfdTyAUnbkAAFLdk23Zbg817.jpg</span><br></pre></td></tr></table></figure>
+
+<p><img src="/fdfs%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E5%9B%BE%E7%89%871.jpg" alt="fdfs集群测试图片1"></p>
+<p><img src="/fdfs%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95%E5%9B%BE%E7%89%87%E4%BA%8C.jpg" alt="fdfs集群测试图片2"></p>
+<h1 id="4-fastdfs服务端常用命令"><a href="#4-fastdfs服务端常用命令" class="headerlink" title="4. fastdfs服务端常用命令"></a>4. fastdfs服务端常用命令</h1><p>fastdfs安装完成后，所有的命令都放在<code>/usr/bin/</code>目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /usr/bin/ -name fdfs*</span><br></pre></td></tr></table></figure>
+
+<p>常用命令有：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># tracker server相关</span></span><br><span class="line">fdfs_trackerd /etc/fdfs/tracker.conf start|stop|restart|status</span><br><span class="line"><span class="comment"># storage server相关</span></span><br><span class="line">fdfs_storaged /etc/fdfs/storage.conf start|stop|restart|status</span><br><span class="line"><span class="comment"># 在服务器上上传文件</span></span><br><span class="line">fdfs_upload_file /etc/fdfs/client.conf filepath</span><br><span class="line"><span class="comment"># 在服务器上查看文件信息</span></span><br><span class="line">fdfs_file_info  /etc/fdfs/client.conf file_id</span><br><span class="line"><span class="comment"># 在服务器上下载文件</span></span><br><span class="line">fdfs_download_file /etc/fdfs/client.conf file_id local_filename</span><br><span class="line"><span class="comment"># 在服务器上删除文件</span></span><br><span class="line">fdfs_delete_file /etc/fdfs/client.conf file_id</span><br><span class="line"><span class="comment"># 查看集群状态</span></span><br><span class="line">fdfs_monitor /etc/fdfs/storage.conf</span><br><span class="line"><span class="comment"># 删除group中的节点（被删除的节点需要先停机，删除后重启tracker server即可看到最新的集群状态）</span></span><br><span class="line">fdfs_monitor /etc/fdfs/storage.conf delete group3 192.168.5.121</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-java客户端集成fastdfs"><a href="#5-java客户端集成fastdfs" class="headerlink" title="5. java客户端集成fastdfs"></a>5. java客户端集成fastdfs</h1><h2 id="5-1-构建jar包"><a href="#5-1-构建jar包" class="headerlink" title="5.1. 构建jar包"></a>5.1. 构建jar包</h2><p>​		由于maven中央仓库找不到官方提供的maven坐标，所以需要根据源码打包并放到本地maven仓库。</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 源码下载地址</span><br><span class="line">https://github.com/happyfish100/fastdfs-client-java</span><br></pre></td></tr></table></figure>
+
+<p>​		将源码解压到本地后，在代码根目录下打开<code>cmd</code>命令窗口，执行<code>mvn clean install</code>后，jar包即导入本地仓库，之后将该jar包引入到项目中。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.csource<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fastdfs-client-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.29-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-添加配置文件"><a href="#5-2-添加配置文件" class="headerlink" title="5.2. 添加配置文件"></a>5.2. 添加配置文件</h2><p>​		复制源代码中<code>fastdfs-client-java-master/src/main/resources/fdfs_client.conf.sample</code>文件为<code>fdfs_client.conf</code>，放在项目的<code>resource</code>目录下，并修改<code>tracker_server</code>配置。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">connect_timeout</span> = <span class="string">5</span></span><br><span class="line"><span class="attr">network_timeout</span> = <span class="string">30</span></span><br><span class="line"><span class="attr">charset</span> = <span class="string">UTF-8</span></span><br><span class="line"><span class="attr">http.tracker_http_port</span> = <span class="string">8080</span></span><br><span class="line"><span class="attr">http.anti_steal_token</span> = <span class="string">true</span></span><br><span class="line"><span class="attr">http.secret_key</span> = <span class="string">1234567</span></span><br><span class="line"></span><br><span class="line"><span class="attr">tracker_server</span> = <span class="string">xxx:22122</span></span><br><span class="line"><span class="attr">tracker_server</span> = <span class="string">xxx:22122</span></span><br><span class="line"></span><br><span class="line"><span class="attr">connection_pool.enabled</span> = <span class="string">true</span></span><br><span class="line"><span class="attr">connection_pool.max_count_per_entry</span> = <span class="string">500</span></span><br><span class="line"><span class="attr">connection_pool.max_idle_time</span> = <span class="string">3600</span></span><br><span class="line"><span class="attr">connection_pool.max_wait_time_in_ms</span> = <span class="string">1000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-添加工具类"><a href="#5-3-添加工具类" class="headerlink" title="5.3. 添加工具类"></a>5.3. 添加工具类</h2><p>fastdfs客户端主要通过<code>StorageClient</code>来操作文件，所以添加一个工具类，用来获取该对象。</p>
+<p><code>StorageClient</code>和<code>StorageClient1</code>逻辑一致，区别为<code>StorageClient</code>将<code>group name</code>和<code>file path</code>分开处理，而<code>StorageClient1</code>将这两个参数统一处理；</p>
+<p><strong>注意：fastdfs java client 的几个主要类都不是线程安全的，每次使用前需要新建一个client。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.csource.fastdfs.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FastDFSUtil</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        ClientGlobal.init(<span class="string">&quot;fdfs_client.conf&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> StorageClient <span class="title function_">getStorageClient</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// return new StorageClient1();</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">StorageClient</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-4-上传文件"><a href="#5-4-上传文件" class="headerlink" title="5.4. 上传文件"></a>5.4. 上传文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.lhx.fastdfs.util.FastDFSUtil;</span><br><span class="line"><span class="keyword">import</span> org.csource.fastdfs.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UploadFile</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">StorageClient</span> <span class="variable">storageClient</span> <span class="operator">=</span> FastDFSUtil.getStorageClient();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回group name和新创建的file name</span></span><br><span class="line">        String[] fileInfos = storageClient.upload_file(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\1.jpg&quot;</span>,</span><br><span class="line">                <span class="string">&quot;jpg&quot;</span>, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (String fileInfo : fileInfos) &#123;</span><br><span class="line">            System.out.println(fileInfo);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fileInfos = storageClient.upload_file(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\2.jpg&quot;</span>,</span><br><span class="line">                <span class="string">&quot;jpg&quot;</span>, <span class="literal">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (String fileInfo : fileInfos) &#123;</span><br><span class="line">            System.out.println(fileInfo);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6.jpg" alt="上传文件"></p>
+<h2 id="5-5-下载文件"><a href="#5-5-下载文件" class="headerlink" title="5.5. 下载文件"></a>5.5. 下载文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.lhx.fastdfs.util.FastDFSUtil;</span><br><span class="line"><span class="keyword">import</span> org.csource.fastdfs.StorageClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DownLoadFile</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="type">StorageClient</span> <span class="variable">storageClient</span> <span class="operator">=</span> FastDFSUtil.getStorageClient();</span><br><span class="line">        <span class="comment">// 这里的group_name和remote_filename为上传文件时方法的返回值</span></span><br><span class="line">        storageClient.download_file(<span class="string">&quot;group1&quot;</span>,</span><br><span class="line">                <span class="string">&quot;M00/00/00/wKgFb2Jfs_qALeDaAABiS2pA_yI273.jpg&quot;</span>,</span><br><span class="line">                <span class="string">&quot;C:\\Users\\Administrator\\Desktop\\111.jpg&quot;</span>);</span><br><span class="line"></span><br><span class="line">        storageClient.download_file(<span class="string">&quot;group1&quot;</span>,</span><br><span class="line">                <span class="string">&quot;M00/00/00/wKgFb2Jfs_qAK7XhAAAtcV-A8_g440.jpg&quot;</span>,</span><br><span class="line">                <span class="string">&quot;C:\\Users\\Administrator\\Desktop\\222.jpg&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-6-删除文件"><a href="#5-6-删除文件" class="headerlink" title="5.6. 删除文件"></a>5.6. 删除文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.lhx.fastdfs.util.FastDFSUtil;</span><br><span class="line"><span class="keyword">import</span> org.csource.fastdfs.StorageClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DeleteFile</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">StorageClient</span> <span class="variable">storageClient</span> <span class="operator">=</span> FastDFSUtil.getStorageClient();</span><br><span class="line">        <span class="comment">// 这里的group_name和remote_filename为上传文件时方法的返回值</span></span><br><span class="line">        storageClient.delete_file(<span class="string">&quot;group1&quot;</span>, </span><br><span class="line">                <span class="string">&quot;M00/00/00/wKgFb2Jfs_qALeDaAABiS2pA_yI273.jpg&quot;</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="6-http访问资源及防盗链"><a href="#6-http访问资源及防盗链" class="headerlink" title="6. http访问资源及防盗链"></a>6. http访问资源及防盗链</h1><h2 id="6-1-浏览器直接请求资源"><a href="#6-1-浏览器直接请求资源" class="headerlink" title="6.1 浏览器直接请求资源"></a>6.1 浏览器直接请求资源</h2><p>fastdfs推荐使用http请求的方式直接下载资源，方式为：<code>http://storageServerIp:httpServerPort</code>+<code>fileId</code>，请求路径中各字段的含义如下：</p>
+<ul>
+<li><strong>storageServerIP</strong>：storage server的ip地址；</li>
+<li><strong>httpServerPort</strong>：storage server开放的http端口号，在<code>/etc/fdfs/storage.conf</code>中的<code>http.server_port</code>上配置；</li>
+<li><strong>fileId</strong>：文件id，上传文件时由storage server生成；</li>
+</ul>
+<p>通过这种方式，在得知storage server ip和端口信息，以及文件id的时候，可随时获取该资源，显然这种方式不太安全，可使用防盗链的方式解决。</p>
+<h2 id="6-2-防盗链"><a href="#6-2-防盗链" class="headerlink" title="6.2. 防盗链"></a>6.2. 防盗链</h2><p><code>fastdfs-nginx-module</code>提供了<code>token</code>方式的防盗链（默认是关闭的），在请求的url后跟上<code>token</code>和<code>ts</code>两个参数即可：</p>
+<ul>
+<li><strong>ts</strong>：生成token的时间，单位为秒（unix时间戳）；</li>
+<li><strong>token</strong>：32位的token字符串（md5签名）；</li>
+</ul>
+<h3 id="6-2-1-服务端开启防盗链"><a href="#6-2-1-服务端开启防盗链" class="headerlink" title="6.2.1. 服务端开启防盗链"></a>6.2.1. 服务端开启防盗链</h3><p><strong><font color="red">注意：集群中各节点的时间一定要一致，否则使用防盗链时，可能会出现token失效时间不一致的情况！！！</font></strong></p>
+<p>修改storage server上<code>/etc/fdfs/http.conf</code>配置，并重启<code>nginx</code>，示例配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HTTP default content type</span></span><br><span class="line">http.default_content_type = application/octet-stream</span><br><span class="line"></span><br><span class="line"><span class="comment"># MIME types mapping filename</span></span><br><span class="line"><span class="comment"># MIME types file format: MIME_type  extensions</span></span><br><span class="line"><span class="comment"># such as:  image/jpeg	jpeg jpg jpe</span></span><br><span class="line"><span class="comment"># you can use apache&#x27;s MIME file: mime.types</span></span><br><span class="line">http.mime_types_filename = mime.types</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启token防盗链</span></span><br><span class="line">http.anti_steal.check_token = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># token失效时间，单位为秒</span></span><br><span class="line">http.anti_steal.token_ttl = 120</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成token的私有key，与客户端配置文件中保持一致</span></span><br><span class="line">http.anti_steal.secret_key = FastDFS1234567890</span><br><span class="line"></span><br><span class="line"><span class="comment"># token失效时展示的图片</span></span><br><span class="line">http.anti_steal.token_check_fail = /home/yuqing/fastdfs/conf/anti-steal.jpg</span><br><span class="line">http.multi_range.enabed = <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-2-客户端开启防盗链"><a href="#6-2-2-客户端开启防盗链" class="headerlink" title="6.2.2. 客户端开启防盗链"></a>6.2.2. 客户端开启防盗链</h3><p>java客户端中修改<code>fdfs_client.conf</code>配置，示例如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">connect_timeout = 5</span><br><span class="line">network_timeout = 30</span><br><span class="line">charset = UTF-8</span><br><span class="line">http.tracker_http_port = 8080</span><br><span class="line"><span class="comment"># 开启防盗链</span></span><br><span class="line">http.anti_steal_token = <span class="literal">true</span></span><br><span class="line"><span class="comment"># 生成token的私有key，与服务端保持一致</span></span><br><span class="line">http.secret_key = FastDFS1234567890</span><br><span class="line"></span><br><span class="line">tracker_server = 192.168.5.112:22122</span><br><span class="line"></span><br><span class="line">connection_pool.enabled = <span class="literal">true</span></span><br><span class="line">connection_pool.max_count_per_entry = 500</span><br><span class="line">connection_pool.max_idle_time = 3600</span><br><span class="line">connection_pool.max_wait_time_in_ms = 1000</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-3-生成token"><a href="#6-2-3-生成token" class="headerlink" title="6.2.3. 生成token"></a>6.2.3. 生成token</h3><p>使用客户端SDK自带的方法生成token</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lhx.fastdfs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.csource.common.MyException;</span><br><span class="line"><span class="keyword">import</span> org.csource.fastdfs.ProtoCommon;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"><span class="keyword">import</span> java.security.NoSuchAlgorithmException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AntiSteal</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> UnsupportedEncodingException, NoSuchAlgorithmException, MyException &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">remoteFileName</span> <span class="operator">=</span> <span class="string">&quot;M00/00/00/wKgFbmJlCe2AFIY2ABTNkfy_PF0798.mp4&quot;</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">ts</span> <span class="operator">=</span> (<span class="type">int</span>)(System.currentTimeMillis() / <span class="number">1000</span>);</span><br><span class="line">        System.out.println(ts);</span><br><span class="line">        <span class="type">String</span> <span class="variable">secretKey</span> <span class="operator">=</span> <span class="string">&quot;FastDFS1234567890&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> ProtoCommon.getToken(remoteFileName, ts, secretKey);</span><br><span class="line">        System.out.println(token);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-4-测试防盗链效果"><a href="#6-2-4-测试防盗链效果" class="headerlink" title="6.2.4. 测试防盗链效果"></a>6.2.4. 测试防盗链效果</h3><p>上传一个测试文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先上传一个图片素材到storage server</span></span><br><span class="line">fdfs_upload_file /etc/fdfs/client.conf /usr/local/11.jpg</span><br><span class="line"><span class="comment"># 得到文件id</span></span><br><span class="line">group1/M00/00/00/wKgFb2JlB6OAQzViAAFLdk23Zbg767.jpg </span><br></pre></td></tr></table></figure>
+
+<p>直接在浏览器访问上传的文件，提示没有权限：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.5.112/group1/M00/00/00/wKgFb2JlB6OAQzViAAFLdk23Zbg767.jpg</span><br></pre></td></tr></table></figure>
+
+<p><img src="/%E6%89%BE%E4%B8%8D%E5%88%B0%E8%B5%84%E6%BA%90.jpg" alt="找不到资源"></p>
+<p>生成token后再访问：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.5.112/group1/M00/00/00/wKgFb2JlB6OAQzViAAFLdk23Zbg767.jpg?token=d25ae21f9a18d8831b0639ea3a488ed8&amp;ts=1650791311</span><br></pre></td></tr></table></figure>
+
+<p><img src="/%E4%BD%BF%E7%94%A8%E9%98%B2%E7%9B%97%E9%93%BE.jpg" alt="使用防盗链"></p>
+<p>token过期后再访问：</p>
+<p><img src="/token%E8%BF%87%E6%97%B6.jpg" alt="token过时"></p>
+<h1 id="7-fastdfs集群扩容"><a href="#7-fastdfs集群扩容" class="headerlink" title="7. fastdfs集群扩容"></a>7. fastdfs集群扩容</h1><h2 id="7-1-横向扩容"><a href="#7-1-横向扩容" class="headerlink" title="7.1. 横向扩容"></a>7.1. 横向扩容</h2><p>​		横向扩容指增加<code>storage cluster</code>中group的数量，例如现有集群架构为2台tracker server组成tracker cluster，4台storage server组成storage cluster，且两两分为group1和group2，现在要对集群进行横向扩容，即storage cluster新增加由两台storage server组成的group3，则需要以下几个步骤：</p>
+<ul>
+<li>配置好两台新增storage server的单机环境，启动storage server即可；</li>
+<li>修改所有tracker server上nginx的负载配置，把新增的storage server地址加上去，并重启nginx；</li>
+</ul>
+<p>​		<strong>综上，横向扩容的方法在只用重启tracker server上的nginx，鉴于生产环境架构为tracker cluster，所以该方式可逐台重启tracker server上的nginx，即可以在不停服务的情况下完成动态扩容。</strong></p>
+<h2 id="7-2-纵向扩容"><a href="#7-2-纵向扩容" class="headerlink" title="7.2. 纵向扩容"></a>7.2. 纵向扩容</h2><p>​		纵向扩容指对group的容量进行扩容，因为同一group内机器的数据是互相备份的，故同一个group的最大容量取决于group内最小strorage的存储容量，若要对一个group进行纵向扩容，则需要以下几个步骤：</p>
+<ul>
+<li>对group内所有机器挂载相同容量的磁盘；</li>
+<li>修改group内所有机器<code>storage.conf</code>和<code>mod_fastdfs.conf</code>配置文件中的<code>store_path_count</code>属性，并添加相应的<code>store_path</code>，最后再重启storage server和nginx即可；</li>
+</ul>
+<p><strong><font color="red">注意：修改完单台storage server后，该节点会切换到OFFLINE状态（下线状态，不可上传，可通过浏览器访问），直到group内所有节点调整完毕后，才会切换到ACTIVE状态。</font></strong></p>
+<p>​		<strong>综上，纵向扩容的方式需要逐台重启group内的storage server和nginx，待group内所有节点重启完毕后，该group方可提供服务，即这种扩容方式需要暂停group的服务（其他group无影响，该group仅可通过浏览器访问已上传的文件），时间大概为秒级（最后一台storage server重启的时间 + fastdfs cluster调整group storage count的时间）。</strong></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/10/system/Docker%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-10 18:39:41
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                        <b>#</b> 中间件
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                        <b>#</b> 分布式文件存储
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/FastDFS/" title="FastDFS">
+                        <b>#</b> FastDFS
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/system/git%E5%85%A5%E9%97%A8/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-fastdfs%E7%AE%80%E4%BB%8B"><span class="toc-text">1. fastdfs简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E7%89%B9%E7%82%B9"><span class="toc-text">1.1. 特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5"><span class="toc-text">1.2. 设计理念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E6%96%87%E4%BB%B6%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B"><span class="toc-text">1.3. 文件交互过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-text">1.3.1 上传文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="toc-text">1.3.2 下载文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E6%9E%B6%E6%9E%84%E5%9B%BE"><span class="toc-text">1.4. 架构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="toc-text">1.5. 名词解释</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-fastdfs%E5%8D%95%E6%9C%BA%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-text">2. fastdfs单机环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E8%AF%B4%E6%98%8E"><span class="toc-text">2.1. 说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E7%89%88%E6%9C%AC"><span class="toc-text">2.2. 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E8%B5%84%E6%BA%90%E4%B8%8B%E8%BD%BD"><span class="toc-text">2.3. 资源下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83"><span class="toc-text">2.4. 编译环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-%E5%AE%89%E8%A3%85"><span class="toc-text">2.5. 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">2.6. 编辑配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-1-%E8%AF%B4%E6%98%8E"><span class="toc-text">2.6.1. 说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-2-%E9%85%8D%E7%BD%AEclient-conf"><span class="toc-text">2.6.2. 配置client.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-3-%E9%85%8D%E7%BD%AEtracker-conf"><span class="toc-text">2.6.3. 配置tracker.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-4-%E9%85%8D%E7%BD%AEstorage-conf"><span class="toc-text">2.6.4. 配置storage.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-5-%E9%85%8D%E7%BD%AEmod-fastdfs-conf"><span class="toc-text">2.6.5. 配置mod_fastdfs.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-6-%E9%85%8D%E7%BD%AEnginx-conf"><span class="toc-text">2.6.6. 配置nginx.conf</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-7-%E6%B5%8B%E8%AF%95%E6%90%AD%E5%BB%BA%E7%BB%93%E6%9E%9C"><span class="toc-text">2.7. 测试搭建结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-fastdfs%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-text">3. fastdfs集群环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E8%AF%B4%E6%98%8E"><span class="toc-text">3.1. 说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-tracker-conf%E9%85%8D%E7%BD%AE"><span class="toc-text">3.2. tracker.conf配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-storage-conf%E9%85%8D%E7%BD%AE"><span class="toc-text">3.3. storage.conf配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-mod-fastdfs-conf%E9%85%8D%E7%BD%AE"><span class="toc-text">3.4. mod_fastdfs.conf配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-%E6%B5%8B%E8%AF%95%E6%90%AD%E5%BB%BA%E7%BB%93%E6%9E%9C"><span class="toc-text">3.5. 测试搭建结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-fastdfs%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">4. fastdfs服务端常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-java%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%9B%86%E6%88%90fastdfs"><span class="toc-text">5. java客户端集成fastdfs</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1-%E6%9E%84%E5%BB%BAjar%E5%8C%85"><span class="toc-text">5.1. 构建jar包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-%E6%B7%BB%E5%8A%A0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">5.2. 添加配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3-%E6%B7%BB%E5%8A%A0%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">5.3. 添加工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4-%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-text">5.4. 上传文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-5-%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="toc-text">5.5. 下载文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-6-%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6"><span class="toc-text">5.6. 删除文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-http%E8%AE%BF%E9%97%AE%E8%B5%84%E6%BA%90%E5%8F%8A%E9%98%B2%E7%9B%97%E9%93%BE"><span class="toc-text">6. http访问资源及防盗链</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9B%B4%E6%8E%A5%E8%AF%B7%E6%B1%82%E8%B5%84%E6%BA%90"><span class="toc-text">6.1 浏览器直接请求资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E9%98%B2%E7%9B%97%E9%93%BE"><span class="toc-text">6.2. 防盗链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-1-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%BC%80%E5%90%AF%E9%98%B2%E7%9B%97%E9%93%BE"><span class="toc-text">6.2.1. 服务端开启防盗链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-2-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%90%AF%E9%98%B2%E7%9B%97%E9%93%BE"><span class="toc-text">6.2.2. 客户端开启防盗链</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-3-%E7%94%9F%E6%88%90token"><span class="toc-text">6.2.3. 生成token</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-4-%E6%B5%8B%E8%AF%95%E9%98%B2%E7%9B%97%E9%93%BE%E6%95%88%E6%9E%9C"><span class="toc-text">6.2.4. 测试防盗链效果</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-fastdfs%E9%9B%86%E7%BE%A4%E6%89%A9%E5%AE%B9"><span class="toc-text">7. fastdfs集群扩容</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#7-1-%E6%A8%AA%E5%90%91%E6%89%A9%E5%AE%B9"><span class="toc-text">7.1. 横向扩容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-2-%E7%BA%B5%E5%90%91%E6%89%A9%E5%AE%B9"><span class="toc-text">7.2. 纵向扩容</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + FastDFS%E5%85%A5%E9%97%A8 + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F10%2Fmiddleware%2FFastDFS%25E5%2585%25A5%25E9%2597%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/10/middleware/FastDFS%E5%85%A5%E9%97%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

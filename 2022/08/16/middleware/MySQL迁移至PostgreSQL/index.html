@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      MySQL迁移至PostgreSQL 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">MySQL迁移至PostgreSQL</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-16 15:22:55
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                    <b>#</b> 中间件
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                    <b>#</b> 数据迁移
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/MySQL/" title="MySQL">
+                    <b>#</b> MySQL
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                    <b>#</b> PostgreSQL
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                    <b>#</b> 数据迁移
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/pgloader/" title="pgloader">
+                    <b>#</b> pgloader
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[toc]</p>
+<h1 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h1><h2 id="使用pgloader工具"><a href="#使用pgloader工具" class="headerlink" title="使用pgloader工具"></a>使用pgloader工具</h2><blockquote>
+<p>官方地址：<code>https://github.com/dimitri/pgloader</code></p>
+<p>文档地址：<code>https://pgloader.readthedocs.io/en/latest/index.html</code></p>
+</blockquote>
+<hr>
+<p><strong>安装</strong></p>
+<p>github上有源码安装方式，本次使用docker安装。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull dimitri/pgloader <span class="comment"># 拉取镜像</span></span><br><span class="line">docker run -it --name mypgloader dimitri/pgloader /bin/bash <span class="comment"># 启动并进入容器</span></span><br><span class="line"><span class="built_in">exit</span> <span class="comment"># 退出容器</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>使用</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入到容器内</span></span><br><span class="line">docker <span class="built_in">exec</span> -it mypgloader /bin/bash</span><br><span class="line"><span class="comment"># 查看pgloader版本和帮助信息</span></span><br><span class="line">pgloader -V</span><br><span class="line">pgloader -h</span><br><span class="line"><span class="comment"># 编辑配置文件，内容见下</span></span><br><span class="line">vim /tmp/pgloader.load</span><br></pre></td></tr></table></figure>
+
+<p><strong>pgloader.load</strong></p>
+<blockquote>
+<p>配置文件说明见说明文档：<code>https://pgloader.readthedocs.io/en/latest/ref/mysql.html#</code></p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATABASE</span><br><span class="line">     FROM mysql://isms:POSTisms2019@172.19.4.37:3306/isms</span><br><span class="line">     INTO postgresql://isms:POSTisms2019@192.168.1.157:5432/postgres</span><br><span class="line"></span><br><span class="line">WITH include drop, create tables, create indexes, foreign keys,</span><br><span class="line">     uniquify index names, downcase identifiers, workers = 8, concurrency = 1</span><br><span class="line">;</span><br></pre></td></tr></table></figure>
+
+<p><strong>pg库准备</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 创建isms用户、模式</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> isms <span class="keyword">WITH</span> PASSWORD <span class="string">&#x27;POSTisms2019&#x27;</span> SUPERUSER;</span><br><span class="line"><span class="keyword">CREATE</span> SCHEMA isms;</span><br><span class="line"><span class="keyword">ALTER</span> SCHEMA isms OWNER <span class="keyword">TO</span> isms;</span><br></pre></td></tr></table></figure>
+
+<p><strong>开始迁移数据</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 容器内部执行</span></span><br><span class="line">pgloader /tmp/pgloader.load</span><br></pre></td></tr></table></figure>
+
+<h2 id="pgloader存在的问题及解决方法"><a href="#pgloader存在的问题及解决方法" class="headerlink" title="pgloader存在的问题及解决方法"></a>pgloader存在的问题及解决方法</h2><h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>只能迁移表结构和表数据，视图、函数等无法迁移；</li>
+<li>mysql中的分区表迁移后没有分区；</li>
+</ol>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ol>
+<li><p>迁移视图问题，可通过数据库连接工具（如navicat）批量导出视图的ddl语句，再针对pg与mysql语法的不同之处进行适当修改，最后在pg库中手动执行ddl语句来创建视图；</p>
+<ul>
+<li>删除<code>CREATE</code>和<code>VIEW</code>关键字之间的内容；</li>
+<li>删除所有的反引号<code>`</code>;</li>
+<li><code>FROM</code>后尽量不要跟括号<code>()</code>，否则有可能报错；</li>
+<li><code>JOIN</code>后要跟<code>ON</code>；</li>
+<li>替换用到的函数，如格式化日期函数等；</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- mysql create view</span></span><br><span class="line"><span class="keyword">CREATE</span> ALGORITHM <span class="operator">=</span> UNDEFINED DEFINER <span class="operator">=</span> `isms` @`<span class="operator">%</span>` <span class="keyword">SQL</span> SECURITY DEFINER <span class="keyword">VIEW</span> `v_pro_cpsrv` <span class="keyword">AS</span> <span class="keyword">SELECT</span></span><br><span class="line">`t_cp_service`.`CP_SERVICE_CODE` <span class="keyword">AS</span> `CPSRVCODE`,</span><br><span class="line">`t_cp`.`PROVINCE_CODE` <span class="keyword">AS</span> `PROVINCE_CODE` </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">	( `t_cp_service` <span class="keyword">JOIN</span> `t_cp` ) </span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">	( `t_cp_service`.`CPCORP_ID` <span class="operator">=</span> `t_cp`.`CPCORP_ID` );</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">-- pg create view</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> v_pro_cpsrv <span class="keyword">AS</span> <span class="keyword">SELECT</span></span><br><span class="line">t_cp_service.CP_SERVICE_CODE <span class="keyword">AS</span> CPSRVCODE,</span><br><span class="line">t_cp.PROVINCE_CODE <span class="keyword">AS</span> PROVINCE_CODE </span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">	 t_cp_service <span class="keyword">JOIN</span> t_cp  </span><br><span class="line"><span class="keyword">ON</span></span><br><span class="line">	 (t_cp_service.CPCORP_ID <span class="operator">=</span> t_cp.CPCORP_ID);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>分区表问题，可先查出mysql中的分区表，再将pg中对应表删除后重新创建；</p>
+<ol>
+<li><p>查询mysql中的分区表；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">distinct</span> table_name <span class="keyword">FROM</span> information_schema.PARTITIONS <span class="keyword">where</span> table_schema <span class="operator">=</span> <span class="string">&#x27;isms&#x27;</span> <span class="keyword">and</span> partition_method <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用navicat导出pg中对应表的DDL；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &quot;isms&quot;.&quot;t_hy_order&quot; (</span><br><span class="line">  &quot;order_id&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  &quot;service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;cp_service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;op_service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;phone&quot; <span class="type">varchar</span>(<span class="number">32</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;phone_type&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;action&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;access_mode&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;opcorp_id&quot; <span class="type">varchar</span>(<span class="number">6</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;order_flag&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;order_time&quot; timestamptz(<span class="number">6</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  &quot;attach_info_type&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;attach_info&quot; <span class="type">varchar</span>(<span class="number">64</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;remark&quot; <span class="type">varchar</span>(<span class="number">64</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;branch_no&quot; <span class="type">varchar</span>(<span class="number">16</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;oper_no&quot; <span class="type">varchar</span>(<span class="number">16</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;fee_value&quot; <span class="type">numeric</span>(<span class="number">6</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;province_code&quot; <span class="type">char</span>(<span class="number">6</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;city_code&quot; <span class="type">char</span>(<span class="number">6</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  &quot;town_code&quot; <span class="type">varchar</span>(<span class="number">9</span>) <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot;,</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> &quot;idx_37895_primary&quot; <span class="keyword">PRIMARY</span> KEY (&quot;order_id&quot;, &quot;order_time&quot;)</span><br><span class="line">)</span><br><span class="line">;</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> &quot;isms&quot;.&quot;t_hy_order&quot; </span><br><span class="line">  OWNER <span class="keyword">TO</span> &quot;isms&quot;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> INDEX &quot;idx_37895_attach_info&quot; <span class="keyword">ON</span> &quot;isms&quot;.&quot;t_hy_order&quot; <span class="keyword">USING</span> btree (</span><br><span class="line">  &quot;attach_info&quot; <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot; &quot;pg_catalog&quot;.&quot;text_ops&quot; <span class="keyword">ASC</span> NULLS <span class="keyword">LAST</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> INDEX &quot;idx_37895_phone&quot; <span class="keyword">ON</span> &quot;isms&quot;.&quot;t_hy_order&quot; <span class="keyword">USING</span> btree (</span><br><span class="line">  &quot;phone&quot; <span class="keyword">COLLATE</span> &quot;pg_catalog&quot;.&quot;default&quot; &quot;pg_catalog&quot;.&quot;text_ops&quot; <span class="keyword">ASC</span> NULLS <span class="keyword">LAST</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除pg中未进行分区的表；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> t_hy_order;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>结合mysql中表的分区信息，对第2步导出的DDL信息进行改造；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> &quot;t_hy_order&quot; (</span><br><span class="line">  &quot;order_id&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  &quot;service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>),</span><br><span class="line">  &quot;cp_service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>),</span><br><span class="line">  &quot;op_service_code&quot; <span class="type">varchar</span>(<span class="number">32</span>),</span><br><span class="line">  &quot;phone&quot; <span class="type">varchar</span>(<span class="number">32</span>),</span><br><span class="line">  &quot;phone_type&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;action&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;access_mode&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;opcorp_id&quot; <span class="type">varchar</span>(<span class="number">6</span>),</span><br><span class="line">  &quot;order_flag&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;order_time&quot; timestamptz(<span class="number">6</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  &quot;attach_info_type&quot; <span class="type">numeric</span>(<span class="number">10</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;attach_info&quot; <span class="type">varchar</span>(<span class="number">64</span>),</span><br><span class="line">  &quot;remark&quot; <span class="type">varchar</span>(<span class="number">64</span>),</span><br><span class="line">  &quot;branch_no&quot; <span class="type">varchar</span>(<span class="number">16</span>),</span><br><span class="line">  &quot;oper_no&quot; <span class="type">varchar</span>(<span class="number">16</span>),</span><br><span class="line">  &quot;fee_value&quot; <span class="type">numeric</span>(<span class="number">6</span>,<span class="number">0</span>),</span><br><span class="line">  &quot;province_code&quot; <span class="type">char</span>(<span class="number">6</span>),</span><br><span class="line">  &quot;city_code&quot; <span class="type">char</span>(<span class="number">6</span>),</span><br><span class="line">  &quot;town_code&quot; <span class="type">varchar</span>(<span class="number">9</span>),</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> &quot;idx_37895_primary&quot; <span class="keyword">PRIMARY</span> KEY (&quot;order_id&quot;, &quot;order_time&quot;)</span><br><span class="line">) <span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(ORDER_TIME);</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_hy_order_P201901 <span class="keyword">partition</span> <span class="keyword">of</span> t_hy_order <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">from</span> (MINVALUE) <span class="keyword">to</span> (<span class="string">&#x27;2019-02-01&#x27;</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_hy_order_P201902 <span class="keyword">partition</span> <span class="keyword">of</span> t_hy_order <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">from</span> (<span class="string">&#x27;2019-02-01&#x27;</span>) <span class="keyword">to</span> (<span class="string">&#x27;2019-03-01&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> INDEX &quot;idx_37895_attach_info&quot; <span class="keyword">ON</span> &quot;t_hy_order&quot; (&quot;attach_info&quot;);</span><br><span class="line"><span class="keyword">CREATE</span> INDEX &quot;idx_37895_phone&quot; <span class="keyword">ON</span> &quot;t_hy_order&quot; (&quot;phone&quot;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新在pg中创建分区表；</p>
+</li>
+<li><p>使用pgloader重新导入分区表的数据；</p>
+<p><strong>pgloader.load修改如下</strong></p>
+<blockquote>
+<p>WITH后参数改变；</p>
+<p>INCLUDING ONLY TABLE NAMES MATCHING后跟需要重新导数的表名；</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">LOAD DATABASE</span><br><span class="line">     FROM mysql://isms:POSTisms2019@172.19.4.37:3306/isms</span><br><span class="line">     INTO postgresql://isms:POSTisms2019@192.168.1.157:5432/postgres</span><br><span class="line"></span><br><span class="line">WITH include no drop, create no tables, create no indexes, no foreign keys,</span><br><span class="line">     downcase identifiers, workers = 8, concurrency = 1</span><br><span class="line">INCLUDING ONLY TABLE NAMES MATCHING &#x27;t_hy_order&#x27;, &#x27;t_hy_order_his&#x27;, &#x27;t_mo_log&#x27;, &#x27;t_mt_log&#x27;, &#x27;t_mt_log_detail&#x27;, &#x27;t_op_order&#x27;, &#x27;t_op_whitelist&#x27;, &#x27;t_report_log&#x27;, &#x27;t_tj_cpsend_minute&#x27;, &#x27;t_tj_opsend_minute&#x27;, &#x27;t_tj_report_minute&#x27; </span><br><span class="line">;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ol>
+<h1 id="项目调整"><a href="#项目调整" class="headerlink" title="项目调整"></a>项目调整</h1><h2 id="替换maven坐标"><a href="#替换maven坐标" class="headerlink" title="替换maven坐标"></a>替换maven坐标</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.postgresql/postgresql --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.postgresql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>postgresql<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>42.3.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="调整数据源"><a href="#调整数据源" class="headerlink" title="调整数据源"></a>调整数据源</h2><ul>
+<li>url</li>
+</ul>
+<p> <code>jdbc:postgresql://ip:port/dbname</code></p>
+<ul>
+<li>driver class</li>
+</ul>
+<p><code>org.postgresql.Driver</code></p>
+<h2 id="Hibernate调整方言"><a href="#Hibernate调整方言" class="headerlink" title="Hibernate调整方言"></a>Hibernate调整方言</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;sessionFactory&quot;</span> <span class="attr">class</span>=<span class="string">&quot;...&quot;</span>&gt;</span> </span><br><span class="line">    ...</span><br><span class="line">    <span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">&quot;hibernate.dialect&quot;</span>&gt;</span></span><br><span class="line">        org.hibernate.dialect.PostgreSQL10Dialect<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line">        </span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="sql改动"><a href="#sql改动" class="headerlink" title="sql改动"></a>sql改动</h1><blockquote>
+<p>由于本次调整的代码是基于Hibernate框架的，没有涉及到太多直接写sql的地方，所以下面关于sql的改动点可能不全，后续发现后及时补充。</p>
+</blockquote>
+<h2 id="函数、关键字替换"><a href="#函数、关键字替换" class="headerlink" title="函数、关键字替换"></a>函数、关键字替换</h2><table>
+<thead>
+<tr>
+<th align="center">mysql</th>
+<th align="center">pg</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">&amp;&amp;</td>
+<td align="center">and</td>
+<td align="center">逻辑与</td>
+</tr>
+<tr>
+<td align="center">||</td>
+<td align="center">or</td>
+<td align="center">逻辑或</td>
+</tr>
+<tr>
+<td align="center">concat</td>
+<td align="center">||</td>
+<td align="center">字符串连接</td>
+</tr>
+<tr>
+<td align="center">limit 5,0</td>
+<td align="center">limit 5 offset 0</td>
+<td align="center">分页</td>
+</tr>
+</tbody></table>
+<h2 id="其他改动点"><a href="#其他改动点" class="headerlink" title="其他改动点"></a>其他改动点</h2><ol>
+<li><p>mysql使用单引号<code>&#39;</code>或双引号<code>&quot;</code>来引用属性值（例如<code>where name = &quot;Tom&quot;</code>，或<code>where name = &#39;Tom&#39;</code>）；pg只能使用单引号<code>&#39;</code>来引用数值（即<code>where name = &#39;Tom&#39;</code>），pg中的双引号<code>&quot;</code>用于修饰表名、列名（如<code>where &quot;name&quot; = &#39;Tom&#39;</code>），来保留修饰字段的大小写，否则会统一转为小写；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- mysql</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> &quot;Tom&quot;; <span class="comment">-- success</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;Tom&#x27;</span>; <span class="comment">-- success</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- pg</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> &quot;Tom&quot;; <span class="comment">-- ERROR:  column &quot;Tom&quot; does not exist</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;Tom&#x27;</span>; <span class="comment">-- success</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>mysql中使用反引号<code>`</code>来引用数据库名、表名、字段名，pg中则不允许；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- mysql</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> `isms`.`isms_order` <span class="keyword">WHERE</span> `title` <span class="operator">=</span> &quot;神州行&quot;; <span class="comment">-- success</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- pg</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> `t_province` <span class="keyword">where</span> province_name <span class="operator">=</span> <span class="string">&#x27;北京&#x27;</span>; <span class="comment">-- ERROR:  syntax error at or near &quot;`&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>mysql<code>lower_case_table_names</code>为<code>1</code>时，大小写不敏感（包括关键字、数据库名、表名、列名、列值等），pg除列值外大小写不敏感；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- insert into user (name, age) values (&#x27;Tom&#x27;, 22);</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- mysql</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;Tom&#x27;</span>; <span class="comment">-- 成功查询到记录</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;tom&#x27;</span>; <span class="comment">-- 成功查询到记录</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- pg</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;Tom&#x27;</span>; <span class="comment">-- 成功查询到记录</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;tom&#x27;</span>; <span class="comment">-- 查不到记录</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/16/middleware/MinIO%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-16 15:22:55
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                        <b>#</b> 中间件
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                        <b>#</b> 数据迁移
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/MySQL/" title="MySQL">
+                        <b>#</b> MySQL
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                        <b>#</b> PostgreSQL
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                        <b>#</b> 数据迁移
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/pgloader/" title="pgloader">
+                        <b>#</b> pgloader
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/db/MySQL%E5%85%A5%E9%97%A8/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB"><span class="toc-text">数据迁移</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8pgloader%E5%B7%A5%E5%85%B7"><span class="toc-text">使用pgloader工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pgloader%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-text">pgloader存在的问题及解决方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98"><span class="toc-text">问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-text">解决方法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%B0%83%E6%95%B4"><span class="toc-text">项目调整</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%BF%E6%8D%A2maven%E5%9D%90%E6%A0%87"><span class="toc-text">替换maven坐标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="toc-text">调整数据源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Hibernate%E8%B0%83%E6%95%B4%E6%96%B9%E8%A8%80"><span class="toc-text">Hibernate调整方言</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sql%E6%94%B9%E5%8A%A8"><span class="toc-text">sql改动</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E3%80%81%E5%85%B3%E9%94%AE%E5%AD%97%E6%9B%BF%E6%8D%A2"><span class="toc-text">函数、关键字替换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%94%B9%E5%8A%A8%E7%82%B9"><span class="toc-text">其他改动点</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + MySQL%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F16%2Fmiddleware%2FMySQL%25E8%25BF%2581%25E7%25A7%25BB%25E8%2587%25B3PostgreSQL%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/16/middleware/MySQL%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

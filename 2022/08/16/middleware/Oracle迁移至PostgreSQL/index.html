@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Oracle迁移至PostgreSQL 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Oracle迁移至PostgreSQL</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-16 16:07:42
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                    <b>#</b> 中间件
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                    <b>#</b> 数据迁移
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/Oracle/" title="Oracle">
+                    <b>#</b> Oracle
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                    <b>#</b> PostgreSQL
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                    <b>#</b> 数据迁移
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/Ora2Pg/" title="Ora2Pg">
+                    <b>#</b> Ora2Pg
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[toc]</p>
+<h1 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h1><blockquote>
+<p>使用工具<code>Ora2Pg</code>进行数据库迁移；</p>
+<p><code>Ora2Pg</code>:<strong>Moves Oracle and MySQL database to PostgreSQL</strong></p>
+<p><code>Ora2Pg</code>官网：<code>https://ora2pg.darold.net/</code></p>
+</blockquote>
+<h2 id="搭建Ora2Pg环境"><a href="#搭建Ora2Pg环境" class="headerlink" title="搭建Ora2Pg环境"></a>搭建Ora2Pg环境</h2><h3 id="安装oracle-client"><a href="#安装oracle-client" class="headerlink" title="安装oracle client"></a>安装oracle client</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装oracle client</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># oracle instant client下载地址</span></span><br><span class="line"><span class="comment"># https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html</span></span><br><span class="line"><span class="comment"># rpm包默认会安装到/usr/lib/oracle/11.2/client64目录下</span></span><br><span class="line">rpm -ivh oracle-instantclient11.2-basic-11.2.0.4.0-1.x86_64.rpm</span><br><span class="line">rpm -ivh oracle-instantclient11.2-sqlplus-11.2.0.4.0-1.x86_64.rpm</span><br><span class="line">rpm -ivh oracle-instantclient11.2-devel-11.2.0.4.0-1.x86_64.rpm</span><br><span class="line">rpm -ivh oracle-instantclient11.2-jdbc-11.2.0.4.0-1.x86_64.rpm</span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/lib/oracle/11.2/client64/network/admin</span><br><span class="line">vi /usr/lib/oracle/11.2/client64/network/admin/tnsnames.ora <span class="comment"># 配置监听文件，内容见下</span></span><br><span class="line">vi /etc/profile <span class="comment"># 配置环境变量，添加内容见下</span></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line"><span class="comment"># 测试连接oracle</span></span><br><span class="line">sqlplus username/password@tnsnames.ora中的监听器名称</span><br><span class="line">sqlplus username/password@ip:port/服务名称</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># tnsnames.ora文件内容</span></span><br><span class="line"><span class="attr">监听器名称</span> = <span class="string"></span></span><br><span class="line"> <span class="attr">(DESCRIPTION</span> =<span class="string"></span></span><br><span class="line">    <span class="attr">(ADDRESS_LIST</span> =<span class="string"></span></span><br><span class="line">      <span class="attr">(ADDRESS</span> = <span class="string">(PROTOCOL = TCP)(HOST = ip地址)(PORT = 端口号))</span></span><br><span class="line">    <span class="attr">)</span></span><br><span class="line">    <span class="attr">(CONNECT_DATA</span> =<span class="string"></span></span><br><span class="line">      <span class="attr">(SERVICE_NAME</span> = <span class="string">服务名) </span></span><br><span class="line">    <span class="attr">)</span> <span class="string"></span></span><br><span class="line"><span class="attr">)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># /etc/profile添加配置</span></span><br><span class="line"><span class="attr">export</span> <span class="string">ORACLE_HOME=/usr/lib/oracle/11.2/client64</span></span><br><span class="line"><span class="attr">export</span> <span class="string">PATH=$ORACLE_HOME/bin:$PATH</span></span><br><span class="line"><span class="attr">export</span> <span class="string">TNS_ADMIN=$ORACLE_HOME/network/admin</span></span><br><span class="line"><span class="attr">export</span> <span class="string">LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH</span></span><br><span class="line"><span class="attr">export</span> <span class="string">NLS_LANG=AMERICAN_AMERICA.UTF8</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="安装Perl模块"><a href="#安装Perl模块" class="headerlink" title="安装Perl模块"></a>安装Perl模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看perl版本，需要5.10及以上的版本</span></span><br><span class="line">perl -v</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装相关模块</span></span><br><span class="line">yum -y install perl-YAML perl-Term-ReadLine perl-version perl-libs perl-devel perl-Test-* perl-Pod-* perl-ExtUtils-* perl-CGI perl-CPAN</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装DBI</span></span><br><span class="line"><span class="comment"># 下载地址https://github.com/perl5-dbi/dbi/tags</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/perl/dbi</span><br><span class="line"><span class="built_in">cd</span> /usr/local/perl/dbi</span><br><span class="line">tar -zxvf DBI-1.643.tar.gz</span><br><span class="line"><span class="built_in">cd</span> DBI-1.643</span><br><span class="line">perl Makefile.PL</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装DBD::Oracle</span></span><br><span class="line"><span class="comment"># 下载地址https://github.com/singingfish/DBD-Oracle/tags</span></span><br><span class="line"><span class="comment"># 		https://cpan.metacpan.org/authors/id/Z/ZA/ZARQUON/DBD-Oracle-1.83.tar.gz</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/perl/dbdoracle</span><br><span class="line"><span class="built_in">cd</span> /usr/local/perl/dbdoracle/</span><br><span class="line">tar -zxvf DBD-Oracle-1.83.tar.gz</span><br><span class="line"><span class="built_in">cd</span> DBD-Oracle-1.83</span><br><span class="line">perl Makefile.PL</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装DBD::Pg</span></span><br><span class="line"><span class="comment"># 下载地址：https://github.com/bucardo/dbdpg/tags</span></span><br><span class="line">yum install postgresql-devel</span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/perl/dbdpg</span><br><span class="line"><span class="built_in">cd</span> /usr/local/perl/dbdpg/</span><br><span class="line">tar -zxvf dbdpg-3.15.1.tar.gz</span><br><span class="line"><span class="built_in">cd</span> dbdpg-3.15.1</span><br><span class="line">perl Makefile.PL</span><br><span class="line">make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装ora2pg</span></span><br><span class="line"><span class="comment"># 下载地址https://github.com/darold/ora2pg/tags</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/perl/ora2pg</span><br><span class="line"><span class="built_in">cd</span> /usr/local/perl/ora2pg/</span><br><span class="line">tar -zxvf ora2pg-22.0.tar.gz</span><br><span class="line"><span class="built_in">cd</span> ora2pg-22.0</span><br><span class="line">perl Makefile.PL</span><br><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看已安装的perl模块"><a href="#查看已安装的perl模块" class="headerlink" title="查看已安装的perl模块"></a>查看已安装的perl模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi /tmp/check.pl <span class="comment"># 内容见下文</span></span><br><span class="line">perl /tmp/check.pl</span><br></pre></td></tr></table></figure>
+
+<p><strong>check.pl内容</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/perl</span></span><br><span class="line">use strict;</span><br><span class="line">use ExtUtils::Installed;</span><br><span class="line">my $inst=ExtUtils::Installed-&gt;new();</span><br><span class="line">my @modules = $inst-&gt;modules();</span><br><span class="line">foreach(@modules)&#123;</span><br><span class="line">    my $ver = $inst-&gt;version($_) || &quot;???&quot;;</span><br><span class="line">    printf(&quot;%-12s -- %s\n&quot;,$_,$ver);</span><br><span class="line">&#125;</span><br><span class="line">exit;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除安装的perl模块"><a href="#删除安装的perl模块" class="headerlink" title="删除安装的perl模块"></a>删除安装的perl模块</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在安装目录下执行</span></span><br><span class="line">make uninstall|grep <span class="built_in">unlink</span>|sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用Ora2Pg"><a href="#使用Ora2Pg" class="headerlink" title="使用Ora2Pg"></a>使用Ora2Pg</h2><h3 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> /etc/ora2pg/ora2pg.conf.dist /etc/ora2pg/ora2pg.conf</span><br><span class="line">vi /etc/ora2pg/ora2pg.conf <span class="comment"># 修改内容见下</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ORACLE_HOME	/usr/lib/oracle/11.2/client64</span><br><span class="line">ORACLE_DSN	dbi:Oracle:host=172.17.3.3;sid=orcl;port=1521</span><br><span class="line">ORACLE_USER	ir # 该用户需为DBA用户</span><br><span class="line">ORACLE_PWD	ir</span><br><span class="line">SCHEMA		ir</span><br><span class="line">EXPORT_SCHEMA	1</span><br><span class="line">CREATE_SCHEMA	1</span><br><span class="line">TYPE		TABLE # 导出表结构</span><br><span class="line">PG_DSN		dbi:Pg:dbname=genericdb;host=192.168.5.112;port=5432</span><br><span class="line">PG_USER	 	ir</span><br><span class="line">PG_PWD		ir</span><br><span class="line">FILE_PER_FKEYS		1 # 将外键放到单独的sql脚本中，等数据迁移完毕后，再给表增加外键</span><br></pre></td></tr></table></figure>
+
+<h3 id="导出结构和数据"><a href="#导出结构和数据" class="headerlink" title="导出结构和数据"></a>导出结构和数据</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1、导出结构</span></span><br><span class="line"><span class="comment"># 设置ora2pg.conf中TYPE参数</span></span><br><span class="line">TYPE TABLE,VIEW,SEQUENCE,TRIGGER,FUNCTION,PROCEDURE,TABLESPACE,PARTITION</span><br><span class="line"><span class="comment"># 执行后会在当前目录下生成对应的sql脚本和ora2pg.log</span></span><br><span class="line">ora2pg -d -l ora2pg.log</span><br><span class="line"><span class="comment"># pg创建用户</span></span><br><span class="line">create user ir with password <span class="string">&#x27;ir&#x27;</span> superuser;</span><br><span class="line"><span class="comment"># 导入结构，分别执行导出的sql脚本</span></span><br><span class="line"><span class="comment"># 注意检查一下PARTITION_output.sql中是否存在重名的分区表，若存在，则手动调整一下分区表名称</span></span><br><span class="line"><span class="comment"># 注意：pg中，建表语句中表名如果不加双引号限制，则创建的表名默认为全小写，而oracle中为全大写</span></span><br><span class="line"><span class="comment"># 存放外键的sql脚本要等到表数据迁移完毕后再执行</span></span><br><span class="line">./psql -d genericdb -h 192.168.5.112 -p 5432 -U ir -f /tmp/xxx.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2、导出数据</span></span><br><span class="line"><span class="comment"># 设置ora2pg.conf中TYPE参数</span></span><br><span class="line">TYPE INSERT</span><br><span class="line"><span class="comment"># 执行后数据会自动插入到pg库中</span></span><br><span class="line">ora2pg -d -l ora2pg.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="pg库方面的改动"><a href="#pg库方面的改动" class="headerlink" title="pg库方面的改动"></a>pg库方面的改动</h2><h3 id="修改配置文件-1"><a href="#修改配置文件-1" class="headerlink" title="修改配置文件"></a>修改配置文件</h3><p>调整存放数据的<code>data</code>目录下的配置文件，允许其他ip连接pg</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 1. 修改data目录下pg_hba.conf,增加IPv4配置</span><br><span class="line">host    all         all          0.0.0.0/0        trust</span><br><span class="line"># 2. 修改data目录下的postgresql.conf</span><br><span class="line">listen_addresses = &#x27;*&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="修改编码"><a href="#修改编码" class="headerlink" title="修改编码"></a>修改编码</h3><p>若<code>ora2pg</code>导出到<code>pg</code>失败，可考虑是pg库编码的问题。</p>
+<hr>
+<p><strong>命令行查看编码</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -l</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>sql查看编码</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_database <span class="keyword">where</span> datname <span class="operator">=</span> <span class="string">&#x27;postgres&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>修改编码为utf8</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> pg_database <span class="keyword">set</span> encoding <span class="operator">=</span> pg_char_to_encoding(<span class="string">&#x27;UTF8&#x27;</span>), datcollate <span class="operator">=</span> <span class="string">&#x27;en_US.UTF-8&#x27;</span>, datctype <span class="operator">=</span> <span class="string">&#x27;en_US.UTF-8&#x27;</span> <span class="keyword">where</span> datname <span class="operator">=</span> <span class="string">&#x27;postgres&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="代码调整"><a href="#代码调整" class="headerlink" title="代码调整"></a>代码调整</h1><h2 id="切换数据源"><a href="#切换数据源" class="headerlink" title="切换数据源"></a>切换数据源</h2><ul>
+<li>mvn依赖</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.postgresql/postgresql --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.postgresql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>postgresql<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>42.3.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jar包下载</li>
+</ul>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://jdbc.postgresql.org/download.html</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>url</li>
+</ul>
+<p> <code>jdbc:postgresql://ip:port/dbname</code></p>
+<ul>
+<li>driver class</li>
+</ul>
+<p><code>org.postgresql.Driver</code></p>
+<h2 id="sql调整"><a href="#sql调整" class="headerlink" title="sql调整"></a>sql调整</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>oracle</th>
+<th>postgresql</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dual</td>
+<td>select 1 + 1 from dual</td>
+<td>select 1 + 1</td>
+</tr>
+<tr>
+<td>系统时间</td>
+<td>sysdate</td>
+<td>now(), current_timestamp, localtimestamp</td>
+</tr>
+<tr>
+<td>时间加减</td>
+<td>sysdate + 1</td>
+<td>now() + INTERVAL ‘1 DAY’</td>
+</tr>
+<tr>
+<td>获取序列值</td>
+<td>sequence.nextval</td>
+<td>nextval(‘sequence’)</td>
+</tr>
+<tr>
+<td>序列当前值</td>
+<td>sequence.currval</td>
+<td>currval(‘sequence’)</td>
+</tr>
+<tr>
+<td>判断空值</td>
+<td>nvl(exp1, exp2)</td>
+<td>coalesce(exp1, exp2)</td>
+</tr>
+<tr>
+<td>检索字符串</td>
+<td>instr(‘str1’, ‘str2’)</td>
+<td>strpos(‘str1’, ‘str2’)</td>
+</tr>
+<tr>
+<td>分页</td>
+<td>rownum</td>
+<td>limit pageSize offset pageSize * pageNum</td>
+</tr>
+<tr>
+<td>行号</td>
+<td>rownum</td>
+<td>row_number() over() as rownum</td>
+</tr>
+<tr>
+<td>条件判断</td>
+<td>decode()</td>
+<td>case when then else end</td>
+</tr>
+</tbody></table>
+<h2 id="jndi配置"><a href="#jndi配置" class="headerlink" title="jndi配置"></a>jndi配置</h2><blockquote>
+<p>若使用jndi数据源，则直接修改tomcat的配置文件即可，注意需要在tomcat的lib包下放pg的jar包。</p>
+</blockquote>
+<p><code>$&#123;tomcathome&#125;/conf/context.xml</code>添加配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Context</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">Resource</span> <span class="attr">name</span>=<span class="string">&quot;jdbc/ir&quot;</span> <span class="attr">auth</span>=<span class="string">&quot;Container&quot;</span> </span></span><br><span class="line"><span class="tag">              <span class="attr">type</span>=<span class="string">&quot;javax.sql.DataSource&quot;</span></span></span><br><span class="line"><span class="tag">              <span class="attr">username</span>=<span class="string">&quot;ir&quot;</span> <span class="attr">password</span>=<span class="string">&quot;ir&quot;</span></span></span><br><span class="line"><span class="tag">              <span class="attr">driverClassName</span>=<span class="string">&quot;org.postgresql.Driver&quot;</span></span></span><br><span class="line"><span class="tag">              <span class="attr">url</span>=<span class="string">&quot;jdbc:postgresql://192.168.5.112:5432/genericdb&quot;</span> </span></span><br><span class="line"><span class="tag">              <span class="attr">maxTotal</span>=<span class="string">&quot;8&quot;</span> <span class="attr">maxIdle</span>=<span class="string">&quot;4&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Context</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><ol>
+<li><p><code>hibernate</code>框架需要调整<code>sessionFactory</code>中的<code>hibernate.dialect</code>属性为<code>org.hibernate.dialect</code>包下对应版本的<code>PostgreSQLXXDialet</code>。</p>
+</li>
+<li><p>pg在使用聚合函数时的问题；</p>
+<p><strong>pg要求sql语句中出现聚合函数或order by时，除非group by的字段是主键，否则select、order by等关键字后面跟的字段必须要在group by关键字中声明。</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 例如存在如下表结构和数据</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_user(</span><br><span class="line">	id serial,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">20</span>),</span><br><span class="line">    logdate <span class="type">date</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_user(name, logdate) <span class="keyword">values</span></span><br><span class="line">(<span class="string">&#x27;zhangsan&#x27;</span>, <span class="string">&#x27;20220606&#x27;</span>),(<span class="string">&#x27;zhangsan&#x27;</span>, <span class="string">&#x27;20220607&#x27;</span>),(<span class="string">&#x27;lisi&#x27;</span>, <span class="string">&#x27;20220607&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ERROR:  column &quot;t_user.id&quot; must appear in the GROUP BY clause or be used in an aggregate function</span></span><br><span class="line"><span class="keyword">select</span> id, name, logdate, <span class="built_in">count</span>(logdate) <span class="keyword">from</span> t_user <span class="keyword">group</span> <span class="keyword">by</span> logdate;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- success</span></span><br><span class="line"><span class="keyword">select</span> logdate, <span class="built_in">count</span>(logdate) <span class="keyword">from</span> t_user <span class="keyword">group</span> <span class="keyword">by</span> logdate;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ERROR:  column &quot;t_user.name&quot; must appear in the GROUP BY clause or be used in an aggregate function</span></span><br><span class="line"><span class="keyword">select</span> logdate, <span class="built_in">count</span>(logdate) <span class="keyword">from</span> t_user <span class="keyword">group</span> <span class="keyword">by</span> logdate <span class="keyword">order</span> <span class="keyword">by</span> name;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 现在将表t_user中的id属性设置为主键</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t_user <span class="keyword">add</span> <span class="keyword">primary</span> key (id);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- success</span></span><br><span class="line"><span class="keyword">select</span> id, name, logdate, <span class="built_in">count</span>(logdate) <span class="keyword">from</span> t_user <span class="keyword">group</span> <span class="keyword">by</span> id <span class="keyword">order</span> <span class="keyword">by</span> name;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pg在使用update set时的问题；</p>
+<p><strong>pg要求update时，不能在更新列的说明中包含表的名称（别名也不行）。</strong></p>
+ <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- ERROR:  column &quot;t&quot; of relation &quot;t_service&quot; does not exist</span></span><br><span class="line"><span class="keyword">update</span> T_SERVICE t <span class="keyword">set</span> t.SERVICENAME <span class="operator">=</span> <span class="string">&#x27;业务0002&#x27;</span> <span class="keyword">where</span> t.SERVICECODE <span class="operator">=</span> <span class="string">&#x27;1000038436&#x27;</span>;</span><br><span class="line"><span class="comment">-- success</span></span><br><span class="line"><span class="keyword">update</span> T_SERVICE t <span class="keyword">set</span> SERVICENAME <span class="operator">=</span> <span class="string">&#x27;业务0002&#x27;</span> <span class="keyword">where</span> t.SERVICECODE <span class="operator">=</span> <span class="string">&#x27;1000038436&#x27;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>pg在获取序列下个值时的问题；</p>
+<p><strong>pg要求调用nextval(‘sequence’)时，不能在一个只读的事务中，即spring在配置事务时，涉及到序列的方法不能设置为只读事务。</strong></p>
+<p><strong>例：&lt;tx:method name&#x3D;”getNext*Id” read-only&#x3D;”false”&#x2F;&gt;</strong></p>
+</li>
+<li><p>标识符和关键字问题</p>
+<p>pg和oracle中<strong>关键词和不被引号修饰的标识符</strong>都是大小写不敏感的，但pg会统一转换为小写，而oracle会统一转换为大写，所以要特别注意sql中用引号修饰的标识符。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># oracle</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> T_TEST(id <span class="type">int</span>, name varchar2(<span class="number">20</span>)); # 创建T_TEST表</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test; # 成功，t_test会自动转为T_TEST</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> &quot;t_test&quot;; # 失败，表t_test不存在</span><br><span class="line"># pg</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> T_TEST(id serial, name <span class="type">varchar</span>(<span class="number">20</span>)); # 创建t_test表</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test; # 成功</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> &quot;T_TEST&quot;; # 失败，表T_TEST不存在</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>​	</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/16/microservice/Nacos%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-16 16:07:42
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                        <b>#</b> 中间件
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                        <b>#</b> 数据迁移
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/Oracle/" title="Oracle">
+                        <b>#</b> Oracle
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                        <b>#</b> PostgreSQL
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/" title="数据迁移">
+                        <b>#</b> 数据迁移
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/Ora2Pg/" title="Ora2Pg">
+                        <b>#</b> Ora2Pg
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/db/PostgreSQL%E5%85%A5%E9%97%A8/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%81%E7%A7%BB"><span class="toc-text">数据库迁移</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAOra2Pg%E7%8E%AF%E5%A2%83"><span class="toc-text">搭建Ora2Pg环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85oracle-client"><span class="toc-text">安装oracle client</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Perl%E6%A8%A1%E5%9D%97"><span class="toc-text">安装Perl模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%B2%E5%AE%89%E8%A3%85%E7%9A%84perl%E6%A8%A1%E5%9D%97"><span class="toc-text">查看已安装的perl模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E5%AE%89%E8%A3%85%E7%9A%84perl%E6%A8%A1%E5%9D%97"><span class="toc-text">删除安装的perl模块</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Ora2Pg"><span class="toc-text">使用Ora2Pg</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BC%E5%87%BA%E7%BB%93%E6%9E%84%E5%92%8C%E6%95%B0%E6%8D%AE"><span class="toc-text">导出结构和数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pg%E5%BA%93%E6%96%B9%E9%9D%A2%E7%9A%84%E6%94%B9%E5%8A%A8"><span class="toc-text">pg库方面的改动</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-1"><span class="toc-text">修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E7%BC%96%E7%A0%81"><span class="toc-text">修改编码</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%B0%83%E6%95%B4"><span class="toc-text">代码调整</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%87%E6%8D%A2%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="toc-text">切换数据源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sql%E8%B0%83%E6%95%B4"><span class="toc-text">sql调整</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jndi%E9%85%8D%E7%BD%AE"><span class="toc-text">jndi配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Oracle%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F16%2Fmiddleware%2FOracle%25E8%25BF%2581%25E7%25A7%25BB%25E8%2587%25B3PostgreSQL%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/16/middleware/Oracle%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

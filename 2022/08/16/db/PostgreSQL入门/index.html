@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      PostgreSQL入门 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">PostgreSQL入门</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-16 16:09:56
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库">
+                    <b>#</b> 数据库
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                    <b>#</b> PostgreSQL
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h1 id="PostgreSQL部署"><a href="#PostgreSQL部署" class="headerlink" title="PostgreSQL部署"></a>PostgreSQL部署</h1><h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 官方下载</span><br><span class="line">https://www.postgresql.org/download/</span><br><span class="line"># 中文社区下载</span><br><span class="line">http://www.postgres.cn/v2/download</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>使用操作系统用户postgres创建并初始化数据库时，pg会默认创建一个postgres用户，但该数据库用户没有设置密码，所以需要手动创建数据库用户或者给数据库postgres用户设置密码。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载并解压</span></span><br><span class="line">wget https://ftp.postgresql.org/pub/source/v12.2/postgresql-12.2.tar.bz2</span><br><span class="line">tar xjvf postgresql*.bz2</span><br><span class="line"><span class="built_in">cd</span> postgresql-12.2</span><br><span class="line"><span class="comment"># 编译安装</span></span><br><span class="line">./configure --prefix=/usr/local/pgsql <span class="comment"># /usr/local/pgsql为安装目录</span></span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"><span class="comment"># 配置数据库用户及目录</span></span><br><span class="line">adduser postgres</span><br><span class="line"><span class="built_in">mkdir</span> /usr/local/pgsql/data</span><br><span class="line"><span class="built_in">chown</span> -R postgres:postgres /usr/local/pgsql/data</span><br><span class="line"><span class="comment"># 使用postgres用户初始化并启动数据库</span></span><br><span class="line"></span><br><span class="line">su postgres</span><br><span class="line"><span class="comment"># 设置环境变量</span></span><br><span class="line"><span class="comment">#PAHT = /usr/local/pgsql/bin:$PATH</span></span><br><span class="line"><span class="comment">#export PATH</span></span><br><span class="line"><span class="comment">#PGDATA = /usr/local/pgsql/data</span></span><br><span class="line"><span class="comment">#export PGDATA</span></span><br><span class="line"><span class="comment"># -D选项缺省时，使用PGDATA环境变量</span></span><br><span class="line">/usr/local/pgsql/bin/initdb -D /usr/local/pgsql/data</span><br><span class="line">/usr/local/pgsql/bin/pg_ctl -D /usr/local/pgsql/data -l logfile start</span><br><span class="line"><span class="comment"># 创建并进入数据库</span></span><br><span class="line">/usr/local/pgsql/bin/createdb testdb</span><br><span class="line">/usr/local/pgsql/bin/psql testdb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><p><code>initdb</code>执行完成后，会在<code>PGDATA</code>目录下生成相应的配置文件，常见需要调整的配置文件有<code>pg_hba.conf</code>和<code>postgresql.conf</code>两个。</p>
+<hr>
+<p><strong>pg_hba.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 允许所有ip连接</span><br><span class="line"># IPv4 local connections:</span><br><span class="line">host    all             all             0.0.0.0/0               md5</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>postgresql.conf</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 监听所有TCP/IP连接</span><br><span class="line">listen_addresses = &#x27;*&#x27;</span><br><span class="line">port=5432</span><br><span class="line"># 开启日志记录</span><br><span class="line">logging_collector = on</span><br><span class="line">log_directory = &#x27;pg_log&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="PostgreSQL常用命令"><a href="#PostgreSQL常用命令" class="headerlink" title="PostgreSQL常用命令"></a>PostgreSQL常用命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动/停止/重启数据库</span></span><br><span class="line">/usr/local/pgsql/bin/pg_ctl -D /usr/local/pgsql/data start|stop|restart</span><br><span class="line"><span class="comment"># 创建数据库</span></span><br><span class="line">/usr/local/pgsql/bin/createdb testdb</span><br><span class="line"><span class="comment"># 查看数据库列表</span></span><br><span class="line">/usr/local/pgsql/bin/psql -l</span><br><span class="line"><span class="comment"># 连接数据库</span></span><br><span class="line">/usr/local/pgsql/bin/psql testdb</span><br></pre></td></tr></table></figure>
+
+<h1 id="PostgreSQL数据类型"><a href="#PostgreSQL数据类型" class="headerlink" title="PostgreSQL数据类型"></a>PostgreSQL数据类型</h1><h2 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h2><table>
+<thead>
+<tr>
+<th align="center">名字</th>
+<th align="center">大小</th>
+<th align="center">描述</th>
+<th align="center">范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>smallint</code></td>
+<td align="center">2字节</td>
+<td align="center">小范围整数</td>
+<td align="center">-32768 to +32767</td>
+</tr>
+<tr>
+<td align="center"><code>integer</code></td>
+<td align="center">4字节</td>
+<td align="center">整数的典型选择</td>
+<td align="center">-2147483648 to +2147483647</td>
+</tr>
+<tr>
+<td align="center"><code>bigint</code></td>
+<td align="center">8字节</td>
+<td align="center">大范围整数</td>
+<td align="center">-9223372036854775808 to +9223372036854775807</td>
+</tr>
+<tr>
+<td align="center"><code>decimal</code></td>
+<td align="center">可变</td>
+<td align="center">用户指定精度，精确</td>
+<td align="center">最高小数点前131072位，以及小数点后16383位</td>
+</tr>
+<tr>
+<td align="center"><code>numeric</code></td>
+<td align="center">可变</td>
+<td align="center">用户指定精度，精确</td>
+<td align="center">最高小数点前131072位，以及小数点后16383位</td>
+</tr>
+<tr>
+<td align="center"><code>real</code></td>
+<td align="center">4字节</td>
+<td align="center">可变精度，不精确</td>
+<td align="center">6位十进制精度</td>
+</tr>
+<tr>
+<td align="center"><code>double precision</code></td>
+<td align="center">8字节</td>
+<td align="center">可变精度，不精确</td>
+<td align="center">15位十进制精度</td>
+</tr>
+<tr>
+<td align="center"><code>smallserial</code></td>
+<td align="center">2字节</td>
+<td align="center">自动增加的小整数</td>
+<td align="center">1到32767</td>
+</tr>
+<tr>
+<td align="center"><code>serial</code></td>
+<td align="center">4字节</td>
+<td align="center">自动增加的整数</td>
+<td align="center">1到2147483647</td>
+</tr>
+</tbody></table>
+<h2 id="序数类型"><a href="#序数类型" class="headerlink" title="序数类型"></a>序数类型</h2><p><code>smallserial</code>、<code>serial</code>和<code>bigserial</code>类型不是真正的类型，它们只是为了创建唯一标识符列而存在的方便符号（类似其它一些数据库中支持的<code>AUTO_INCREMENT</code>属性）。 在目前的实现中，下面一个语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> tablename (</span><br><span class="line">    colname SERIAL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>等价于以下语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> SEQUENCE tablename_colname_seq <span class="keyword">AS</span> <span class="type">integer</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> tablename (</span><br><span class="line">    colname <span class="type">integer</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> nextval(<span class="string">&#x27;tablename_colname_seq&#x27;</span>)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">ALTER</span> SEQUENCE tablename_colname_seq OWNED <span class="keyword">BY</span> tablename.colname;</span><br></pre></td></tr></table></figure>
+
+<p>因此，我们就创建了一个整数列并且把它的缺省值安排为从一个序列发生器取值。应用了一个<code>NOT NULL</code>约束以确保空值不会被插入（在大多数情况下你可能还希望附加一个<code>UNIQUE</code>或者<code>PRIMARY KEY</code>约束避免意外地插入重复的值，但这个不是自动发生的）。最后，该序列被标记为“属于”该列，这样当列或表被删除时该序列也会被删除。</p>
+<h2 id="字符类型"><a href="#字符类型" class="headerlink" title="字符类型"></a>字符类型</h2><table>
+<thead>
+<tr>
+<th align="center">名字</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>character varying(n)</code>, <code>varchar(n)</code></td>
+<td align="center">有限制的变长</td>
+</tr>
+<tr>
+<td align="center"><code>character(n)</code>, <code>char(n)</code></td>
+<td align="center">定长，空格填充</td>
+</tr>
+<tr>
+<td align="center"><code>text</code></td>
+<td align="center">无限变长</td>
+</tr>
+</tbody></table>
+<h2 id="日期-x2F-时间类型"><a href="#日期-x2F-时间类型" class="headerlink" title="日期&#x2F;时间类型"></a>日期&#x2F;时间类型</h2><table>
+<thead>
+<tr>
+<th align="center">名字</th>
+<th align="center">描述</th>
+<th align="center">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">timestamp</td>
+<td align="center">包括日期和时间（无时区）</td>
+<td align="center">1999-01-08 04:05:06.332</td>
+</tr>
+<tr>
+<td align="center">date</td>
+<td align="center">日期</td>
+<td align="center">1999-01-08、19990108</td>
+</tr>
+<tr>
+<td align="center">time</td>
+<td align="center">一天中的时间</td>
+<td align="center">04:05:06.789</td>
+</tr>
+<tr>
+<td align="center">interval</td>
+<td align="center">时间间隔</td>
+<td align="center">interval ‘1 day’</td>
+</tr>
+</tbody></table>
+<h3 id="间隔单位缩写"><a href="#间隔单位缩写" class="headerlink" title="间隔单位缩写"></a>间隔单位缩写</h3><table>
+<thead>
+<tr>
+<th align="center">缩写</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Y</td>
+<td align="center">年</td>
+</tr>
+<tr>
+<td align="center">M</td>
+<td align="center">月（在日期部分中）</td>
+</tr>
+<tr>
+<td align="center">W</td>
+<td align="center">周</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">日</td>
+</tr>
+<tr>
+<td align="center">H</td>
+<td align="center">小时</td>
+</tr>
+<tr>
+<td align="center">M</td>
+<td align="center">分钟 (在时间部分中）</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="center">秒</td>
+</tr>
+</tbody></table>
+<h2 id="布尔类型"><a href="#布尔类型" class="headerlink" title="布尔类型"></a>布尔类型</h2><table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">boolean</td>
+<td align="center">输入：<br />真：true、yes、on、1或者这些字符的唯一前缀，不区分大小写<br />假：false、no、off、0或者这些字符的唯一前缀，不区分大小写<br />输出：<br />真：t<br />假：f<br /></td>
+</tr>
+</tbody></table>
+<h2 id="常用函数和操作符"><a href="#常用函数和操作符" class="headerlink" title="常用函数和操作符"></a>常用函数和操作符</h2><h3 id="字符串相关"><a href="#字符串相关" class="headerlink" title="字符串相关"></a>字符串相关</h3><table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">描述</th>
+<th align="center">案例</th>
+<th align="center">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">||</td>
+<td align="center">串接</td>
+<td align="center">‘Post’ || ‘greSQL’</td>
+<td align="center">PostgreSQL</td>
+</tr>
+<tr>
+<td align="center">bit_length(<em><code>string</code></em>)</td>
+<td align="center">串中的位数</td>
+<td align="center"><code>bit_length(&#39;jose&#39;)</code></td>
+<td align="center"><code>32</code></td>
+</tr>
+<tr>
+<td align="center"><code>char_length(</code>string<code>)</code> or <code>character_length(</code>string<code>)</code></td>
+<td align="center">串中字符数</td>
+<td align="center"><code>char_length(&#39;jose&#39;)</code></td>
+<td align="center"><code>4</code></td>
+</tr>
+<tr>
+<td align="center">length(<em><code>string</code></em>)</td>
+<td align="center">*<code>string</code>*中的字符数</td>
+<td align="center"><code>length(&#39;jose&#39;)</code></td>
+<td align="center"><code>4</code></td>
+</tr>
+<tr>
+<td align="center">lower(<em><code>string</code></em>)</td>
+<td align="center">将字符串转换为小写形式</td>
+<td align="center"><code>lower(&#39;TOM&#39;)</code></td>
+<td align="center"><code>tom</code></td>
+</tr>
+<tr>
+<td align="center">upper(<em><code>string</code></em>)</td>
+<td align="center">将字符串转换成大写形式</td>
+<td align="center"><code>upper(&#39;tom&#39;)</code></td>
+<td align="center"><code>TOM</code></td>
+</tr>
+<tr>
+<td align="center">overlay(<em><code>string</code></em> placing <em><code>string</code></em> from <code>int</code> [for <code>int</code>])</td>
+<td align="center">替换子串</td>
+<td align="center"><code>overlay(&#39;Txxxxas&#39; placing &#39;hom&#39; from 2 for 4)</code></td>
+<td align="center"><code>Thomas</code></td>
+</tr>
+<tr>
+<td align="center">position(<em><code>substring</code></em> in <em><code>string</code></em>)</td>
+<td align="center">定位指定子串</td>
+<td align="center"><code>position(&#39;om&#39; in &#39;Thomas&#39;)</code></td>
+<td align="center"><code>3</code></td>
+</tr>
+<tr>
+<td align="center">substring(<em><code>string</code></em> [from <code>int</code>] [for <code>int</code>])</td>
+<td align="center">提取子串</td>
+<td align="center"><code>substring(&#39;Thomas&#39; from 2 for 3)</code></td>
+<td align="center"><code>hom</code></td>
+</tr>
+<tr>
+<td align="center">substr(<em><code>string</code></em>, <em><code>from</code></em> [, <em><code>count</code></em>])</td>
+<td align="center">提取子串</td>
+<td align="center"><code>substr(&#39;alphabet&#39;, 3, 2)</code></td>
+<td align="center"><code>ph</code></td>
+</tr>
+<tr>
+<td align="center">trim([leading |trailing|both] [<em><code>characters</code></em>] from <em><code>string</code></em>)</td>
+<td align="center">从*<code>string</code><em>的开头、结尾或者两端（<code>both</code>是默认值）移除只包含</em><code>characters</code>*（默认是一个空格）中字符的最长字符串</td>
+<td align="center"><code>trim(both &#39;xyz&#39; from &#39;yxTomxx&#39;)</code></td>
+<td align="center"><code>Tom</code></td>
+</tr>
+<tr>
+<td align="center">ascii(<em><code>string</code></em>)</td>
+<td align="center">参数第一个字符的ASCII代码。对于UTF8返回该字符的Unicode代码点。对于其他多字节编码，该参数必须是一个ASCII字符。</td>
+<td align="center"><code>ascii(&#39;x&#39;)</code></td>
+<td align="center"><code>120</code></td>
+</tr>
+<tr>
+<td align="center">chr(<code>int</code>)</td>
+<td align="center">给定代码的字符。对于UTF8该参数被视作一个Unicode代码点。对于其他多字节编码该参数必须指定一个ASCII字符。NULL (0) 字符不被允许，因为文本数据类型不能存储这种字节。</td>
+<td align="center"><code>chr(65)</code></td>
+<td align="center"><code>A</code></td>
+</tr>
+<tr>
+<td align="center">left(<em><code>str</code></em> <code>text</code>, <em><code>n</code></em> <code>int</code>)</td>
+<td align="center">返回字符串中的前*<code>n</code><em>个字符。当</em><code>n</code>*为负时，将返回除了最后</td>
+<td align="center"><em><code>n</code></em>|个字符之外的所有字符。</td>
+<td align="center"><code>left(&#39;abcde&#39;, 2)</code></td>
+</tr>
+<tr>
+<td align="center">right(<em><code>str</code></em> <code>text</code>, <em><code>n</code></em> <code>int</code>)</td>
+<td align="center">回字符串中的最后*<code>n</code><em>个字符。如果</em><code>n</code>*为负，返回除最前面的</td>
+<td align="center"><em><code>n</code></em>|个字符外的所有字符。</td>
+<td align="center"><code>right(&#39;abcde&#39;, 2)</code></td>
+</tr>
+<tr>
+<td align="center">md5(<em><code>string</code></em>)</td>
+<td align="center">计算*<code>string</code>*的 MD5 哈希，返回十六进制的结果</td>
+<td align="center"><code>md5(&#39;abc&#39;)</code></td>
+<td align="center"><code>900150983cd24fb0 d6963f7d28e17f72</code></td>
+</tr>
+<tr>
+<td align="center">repeat(<em><code>string</code></em> <code>text</code>, <em><code>number</code></em> <code>int</code>)</td>
+<td align="center">重复*<code>string</code><em>指定的</em><code>number</code>*次</td>
+<td align="center"><code>repeat(&#39;Pg&#39;, 4)</code></td>
+<td align="center"><code>PgPgPgPg</code></td>
+</tr>
+<tr>
+<td align="center">replace(<em><code>string</code></em> <code>text</code>, <em><code>from</code></em> <code>text</code>, <em><code>to</code></em> <code>text</code>)</td>
+<td align="center">将*<code>string</code><em>中出现的所有子串</em><code>from</code><em>替换为子串</em><code>to</code>*</td>
+<td align="center"><code>replace(&#39;abcdefabcdef&#39;, &#39;cd&#39;, &#39;XX&#39;)</code></td>
+<td align="center"><code>abXXefabXXef</code></td>
+</tr>
+<tr>
+<td align="center">reverse(<em><code>str</code></em>)</td>
+<td align="center">返回反转的字符串。</td>
+<td align="center"><code>reverse(&#39;abcde&#39;)</code></td>
+<td align="center"><code>edcba</code></td>
+</tr>
+<tr>
+<td align="center">starts_with(<em><code>string</code></em>, <em><code>prefix</code></em>)</td>
+<td align="center">如果*<code>string</code><em>以</em><code>prefix</code>*开始则返回真。</td>
+<td align="center"><code>starts_with(&#39;alphabet&#39;, &#39;alph&#39;)</code></td>
+<td align="center"><code>t</code></td>
+</tr>
+<tr>
+<td align="center">to_hex(<em><code>number</code></em> <code>int</code> or <code>bigint</code>)</td>
+<td align="center">将*<code>number</code>*转换到它等效的十六进制表示</td>
+<td align="center"><code>to_hex(2147483647)</code></td>
+<td align="center"><code>7fffffff</code></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h3 id="日期-x2F-时间相关"><a href="#日期-x2F-时间相关" class="headerlink" title="日期&#x2F;时间相关"></a>日期&#x2F;时间相关</h3><table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">描述</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">to_date(<code>text</code>, <code>text</code>)</td>
+<td align="center">把字符串转成日期</td>
+<td>to_date(‘2022-01-01’, ‘YYYY-MM-DD’)</td>
+</tr>
+<tr>
+<td align="center">to_char(<code>date</code>, <code>text</code>)</td>
+<td align="center">把日期转成字符串</td>
+<td>to_char(date1, ‘YYYYMMDD’)</td>
+</tr>
+<tr>
+<td align="center">current_date</td>
+<td align="center">当前日期</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">current_time</td>
+<td align="center">当前时间with time zone</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">current_timestamp</td>
+<td align="center">当前日期和时间with time zone</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">localtime</td>
+<td align="center">当前时间</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">localtimestamp</td>
+<td align="center">当前日期和时间</td>
+<td></td>
+</tr>
+<tr>
+<td align="center">now()</td>
+<td align="center">当前日期和时间with time zone</td>
+<td></td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="center"></td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="PostgreSQL常用sql脚本"><a href="#PostgreSQL常用sql脚本" class="headerlink" title="PostgreSQL常用sql脚本"></a>PostgreSQL常用sql脚本</h1><h2 id="查看数据库版本"><a href="#查看数据库版本" class="headerlink" title="查看数据库版本"></a>查看数据库版本</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> version();</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看所有表信息"><a href="#查看所有表信息" class="headerlink" title="查看所有表信息"></a>查看所有表信息</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_tables;</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test(</span><br><span class="line">    id <span class="type">int</span> <span class="keyword">primary</span> key, <span class="comment">-- primary key表示主键</span></span><br><span class="line">	key1 <span class="type">numeric</span> <span class="keyword">default</span> <span class="number">0.0</span>, <span class="comment">-- default指定默认值</span></span><br><span class="line">    key2 text <span class="keyword">default</span> <span class="string">&#x27;test&#x27;</span> <span class="keyword">not</span> <span class="keyword">null</span>, <span class="comment">-- not null表示非空约束</span></span><br><span class="line">    <span class="comment">-- generated always as () stored 表示生成列的生成规则</span></span><br><span class="line">    key3 <span class="type">numeric</span> generated always <span class="keyword">as</span> (key1 <span class="operator">/</span> <span class="number">10</span>) stored,</span><br><span class="line">    <span class="comment">-- 列约束，constraint指定约束名称 check 表示检查约束</span></span><br><span class="line">    key4 <span class="type">numeric</span> <span class="keyword">constraint</span> test_key4 <span class="keyword">check</span> (key4 <span class="operator">&gt;</span> <span class="number">0</span>), </span><br><span class="line">    key5 <span class="type">integer</span> <span class="keyword">unique</span>, <span class="comment">-- unique表示唯一约束，可写为 unique (key5)</span></span><br><span class="line">     <span class="comment">-- 外键约束,on delete restrict表示其他表中相关数据删除后，本表数据不删除</span></span><br><span class="line">    key6 <span class="type">integer</span> <span class="keyword">references</span> test2(id) <span class="keyword">on</span> <span class="keyword">delete</span> restrict,</span><br><span class="line">    <span class="comment">-- on delete cascade表示其他表中数据删除后，本表数据也要删除</span></span><br><span class="line">    key7 <span class="type">integer</span> <span class="keyword">references</span> test3(id) <span class="keyword">on</span> <span class="keyword">delete</span> cascade,</span><br><span class="line">    <span class="comment">-- 表级检查约束</span></span><br><span class="line">    <span class="keyword">constraint</span> test_key4_key1 <span class="keyword">check</span> (key4 <span class="operator">&gt;</span> key1 <span class="keyword">and</span> key1 <span class="operator">&gt;</span> <span class="number">0</span>),</span><br><span class="line">    <span class="comment">-- 表级唯一约束</span></span><br><span class="line">    <span class="keyword">constraint</span> test_key4_key5 <span class="keyword">unique</span> (key4, key5),</span><br><span class="line">    <span class="comment">-- 表级外键约束</span></span><br><span class="line">    <span class="keyword">constraint</span> test_key1_key5 <span class="keyword">foreign</span> key (key1, key5) <span class="keyword">references</span> test3(key1, key2)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="给表、列添加注释"><a href="#给表、列添加注释" class="headerlink" title="给表、列添加注释"></a>给表、列添加注释</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">comment <span class="keyword">on</span> <span class="keyword">table</span> test <span class="keyword">is</span> <span class="string">&#x27;testtest&#x27;</span>;</span><br><span class="line">comment <span class="keyword">on</span> <span class="keyword">column</span> test.key2 <span class="keyword">is</span> <span class="string">&#x27;key2test&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX test2_mm_idx <span class="keyword">ON</span> test2 (major, minor);</span><br><span class="line"><span class="keyword">DROP</span> INDEX test2_mm_idx;</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改表"><a href="#修改表" class="headerlink" title="修改表"></a>修改表</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"># 增加列，创建表时的一些约束都可以用在这儿</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">add</span> <span class="keyword">column</span> key8 text, <span class="keyword">add</span> <span class="keyword">column</span> key9 text;</span><br><span class="line"># 移除列,cascade表示授权删除任何依赖该列的数据（如外键）</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">drop</span> <span class="keyword">column</span> key8 cascade;</span><br><span class="line"># 增加约束</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">add</span> <span class="keyword">check</span>(key7 <span class="operator">&gt;</span> <span class="number">0</span>);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">alter</span> <span class="keyword">column</span> key7 <span class="keyword">set</span> <span class="keyword">not</span> <span class="keyword">null</span>;</span><br><span class="line"># 移除约束</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">drop</span> <span class="keyword">constraint</span> constraint_name;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">alter</span> <span class="keyword">column</span> key7 <span class="keyword">drop</span> <span class="keyword">not</span> <span class="keyword">null</span>; <span class="comment">-- 移除test表key7列上的非空约束</span></span><br><span class="line"># 修改列的默认值</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">alter</span> <span class="keyword">column</span> key1 <span class="keyword">set</span> <span class="keyword">default</span> <span class="number">2.0</span>;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">alter</span> <span class="keyword">column</span> key1 <span class="keyword">drop</span> <span class="keyword">default</span>; <span class="comment">-- 移除默认值</span></span><br><span class="line"># 修改列的数据类型</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test <span class="keyword">alter</span> <span class="keyword">column</span> key1 type <span class="type">numeric</span>(<span class="number">10</span>, <span class="number">2</span>);</span><br><span class="line"># 重命名列</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test rename <span class="keyword">column</span> id <span class="keyword">to</span> key0;</span><br><span class="line"># 重命名表</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test rename <span class="keyword">to</span> test1;</span><br></pre></td></tr></table></figure>
+
+<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 重新分配test表的所有者，超级用户总是可以做到这点，普通角色只有同时是对象的当前所有者（或者是拥有角色的一个成员）以及新拥有角色的一个成员时才能做同样的事</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> test owner <span class="keyword">to</span> new_owner;</span><br><span class="line"># 授予joe用户更新test表的权限</span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">update</span> <span class="keyword">on</span> test <span class="keyword">to</span> joe;</span><br><span class="line">## 授权其他写法</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> mytable <span class="keyword">TO</span> PUBLIC;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, <span class="keyword">UPDATE</span>, <span class="keyword">INSERT</span> <span class="keyword">ON</span> mytable <span class="keyword">TO</span> admin;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> (col1), <span class="keyword">UPDATE</span> (col1) <span class="keyword">ON</span> mytable <span class="keyword">TO</span> miriam_rw;</span><br><span class="line"># 撤销public用户对test表的所有权限</span><br><span class="line"><span class="keyword">revoke</span> <span class="keyword">all</span> <span class="keyword">on</span> test <span class="keyword">from</span> public;</span><br></pre></td></tr></table></figure>
+
+<h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># 创建分区表，<span class="keyword">range</span>表示范围分区，其他的还有list和hash分区</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test2(</span><br><span class="line">	id <span class="type">integer</span>,</span><br><span class="line">	logtime <span class="type">date</span></span><br><span class="line">) <span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(logtime);</span><br><span class="line"># 创建分区</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test2_202001 <span class="keyword">partition</span> <span class="keyword">of</span> test2 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">from</span> (MINVALUE) <span class="keyword">to</span> (<span class="string">&#x27;2020-01-01&#x27;</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test2_202002 <span class="keyword">partition</span> <span class="keyword">of</span> test2 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">from</span> (<span class="string">&#x27;2020-01-01&#x27;</span>) <span class="keyword">to</span> (<span class="string">&#x27;2020-02-01&#x27;</span>);</span><br><span class="line"># 删除分区</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> test2_202001;</span><br><span class="line"></span><br><span class="line"># 列表分区</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test3(</span><br><span class="line">	id <span class="type">integer</span>,</span><br><span class="line">	logtime <span class="type">date</span></span><br><span class="line">) <span class="keyword">partition</span> <span class="keyword">by</span> <span class="keyword">range</span>(id);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test3_p1 <span class="keyword">partition</span> <span class="keyword">of</span> test3 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">in</span>(<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"># 哈希分区 MODULUS<span class="operator">-</span>模	REMAINDER<span class="operator">-</span>余数</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test4(</span><br><span class="line">	id <span class="type">integer</span>,</span><br><span class="line">	logtime <span class="type">date</span></span><br><span class="line">) <span class="keyword">partition</span> <span class="keyword">by</span> hash(id);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test4_p1 <span class="keyword">partition</span> <span class="keyword">of</span> test4 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">with</span>(MODULUS <span class="number">4</span>, REMAINDER <span class="number">0</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test4_p2 <span class="keyword">partition</span> <span class="keyword">of</span> test4 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">with</span>(MODULUS <span class="number">4</span>, REMAINDER <span class="number">1</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test4_p3 <span class="keyword">partition</span> <span class="keyword">of</span> test4 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">with</span>(MODULUS <span class="number">4</span>, REMAINDER <span class="number">2</span>);</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test4_p4 <span class="keyword">partition</span> <span class="keyword">of</span> test4 <span class="keyword">for</span> <span class="keyword">values</span> <span class="keyword">with</span>(MODULUS <span class="number">4</span>, REMAINDER <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"># 创建默认分区</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> cities_partdef <span class="keyword">PARTITION</span> <span class="keyword">OF</span> cities <span class="keyword">DEFAULT</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 分页</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> account limit <span class="number">3</span> <span class="keyword">offset</span> <span class="number">0</span>;</span><br><span class="line"># <span class="keyword">with</span>的简单使用</span><br><span class="line"><span class="keyword">with</span> t <span class="keyword">as</span> (</span><br><span class="line">	<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> account <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;lisi&#x27;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t;</span><br></pre></td></tr></table></figure>
+
+<h2 id="事务操作"><a href="#事务操作" class="headerlink" title="事务操作"></a>事务操作</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">begin</span>; <span class="comment">-- 开启事务</span></span><br><span class="line"><span class="keyword">update</span> account <span class="keyword">set</span> balance <span class="operator">=</span> balance <span class="operator">-</span> <span class="number">10</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;zhangsan&#x27;</span>;</span><br><span class="line"><span class="keyword">savepoint</span> my_savepoint; <span class="comment">-- 添加保存点</span></span><br><span class="line"><span class="keyword">update</span> account <span class="keyword">set</span> balance <span class="operator">=</span> balance <span class="operator">+</span> <span class="number">10</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;lisi&#x27;</span>;</span><br><span class="line"><span class="keyword">rollback</span> <span class="keyword">to</span> my_savepoint; <span class="comment">-- 回滚至保存点</span></span><br><span class="line"><span class="keyword">update</span> account <span class="keyword">set</span> balance <span class="operator">=</span> balance <span class="operator">+</span> <span class="number">10</span> <span class="keyword">where</span> name <span class="operator">=</span> <span class="string">&#x27;wangwu&#x27;</span>;</span><br><span class="line"><span class="keyword">commit</span>; <span class="comment">-- 提交事务</span></span><br><span class="line"><span class="comment">-- rollback; 回滚事务</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="窗口函数"><a href="#窗口函数" class="headerlink" title="窗口函数"></a>窗口函数</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 窗口函数与聚合函数类似，只不过窗口函数不会将结果聚合在一行输出</span><br><span class="line"># 关键字有 <span class="keyword">over</span>、rank、<span class="keyword">window</span>、<span class="keyword">partition</span>等</span><br><span class="line"><span class="keyword">select</span> <span class="built_in">sum</span>(salary) <span class="keyword">over</span> w, <span class="built_in">avg</span>(salary) <span class="keyword">over</span> w, <span class="built_in">rank</span>() <span class="keyword">over</span> w</span><br><span class="line"><span class="keyword">from</span> empsalary </span><br><span class="line"><span class="keyword">window</span> w <span class="keyword">as</span> (<span class="keyword">partition</span> <span class="keyword">by</span> depname <span class="keyword">order</span> <span class="keyword">by</span> salary <span class="keyword">desc</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="表继承"><a href="#表继承" class="headerlink" title="表继承"></a>表继承</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 一张表继承另一张表的所有列</span><br><span class="line"># 关键字:inherits</span><br><span class="line"># <span class="keyword">only</span>表示只查询cities，不涉及继承于cities的其他表</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> capitals (</span><br><span class="line">state <span class="type">int</span></span><br><span class="line">) inherits (cities);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">only</span> cities;</span><br></pre></td></tr></table></figure>
+
+<h2 id="索引-1"><a href="#索引-1" class="headerlink" title="索引"></a>索引</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 创建索引</span><br><span class="line"><span class="keyword">create</span> index test3_idx_id <span class="keyword">on</span> test3(id, name);</span><br><span class="line"># 删除索引</span><br><span class="line"><span class="keyword">drop</span> index test3_idx_id;</span><br><span class="line"># 唯一索引,pgsql会自动在唯一列上创建一个唯一索引</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">unique</span> index idx_name <span class="keyword">on</span> table_name(column1, column2);</span><br><span class="line"># 表达式索引</span><br><span class="line"><span class="keyword">CREATE</span> INDEX test1_lower_col1_idx <span class="keyword">ON</span> test1 (<span class="built_in">lower</span>(col1));</span><br><span class="line"><span class="keyword">CREATE</span> INDEX people_names <span class="keyword">ON</span> people ((first_name <span class="operator">||</span> <span class="string">&#x27; &#x27;</span> <span class="operator">||</span> last_name));</span><br><span class="line"># 部分索引</span><br><span class="line"># 使用部分索引的一个主要原因是避免索引公值。由于搜索一个公值的查询（一个在所有表行中占比超过一定百分比的值）不会使用索引，所以完全没有理由将这些行保留在索引中。这可以减小索引的尺寸，同时也将加速使用索引的查询。它也将加速很多表更新操作，因为这种索引并不需要在所有情况下都被更新</span><br><span class="line"><span class="keyword">create</span> index indx_name <span class="keyword">on</span> tablename(columnname)</span><br><span class="line"><span class="keyword">where</span> columnname <span class="operator">&gt;</span> <span class="number">20</span>;</span><br><span class="line"># 覆盖索引</span><br><span class="line"># PostgreSQL中的所有索引是二级索引,这意味着每个索引都是与表的主数据区（在PostgreSQL术语称为表的堆中）分开存储。这意味着在普通索引扫描中，每行检索都需要从索引和堆中取数据。 此外，虽然匹配给定的可索引<span class="keyword">WHERE</span>条件的索引条目通常在一起靠近存储，但它们引用的表行可能在堆中的任何地方。 因此索引扫描的堆访问部分涉及到对堆的大量随机访问，这可能很慢，特别是在传统旋转媒介上。如 第 <span class="number">11.5</span> 节 中所述，位图扫描尝试通过按排序的顺序进行堆访问来减少成本，但这远远不够）。</span><br><span class="line"># 为了解决这种性能问题，PostgreSQL支持只用索引的扫描，这类扫描可以仅用一个索引来回答查询而不产生任何堆访问。其基本思想是直接从每一个索引项中直接返回值，而不是去参考相关的堆项</span><br><span class="line"># 例如 表的x、y列上有索引</span><br><span class="line"><span class="keyword">SELECT</span> x, y <span class="keyword">FROM</span> tab <span class="keyword">WHERE</span> x <span class="operator">=</span> <span class="string">&#x27;key&#x27;</span> <span class="keyword">AND</span> y <span class="operator">&lt;</span> <span class="number">42</span>; <span class="comment">-- 只使用索引的扫描</span></span><br><span class="line"><span class="keyword">SELECT</span> x, z <span class="keyword">FROM</span> tab <span class="keyword">WHERE</span> x <span class="operator">=</span> <span class="string">&#x27;key&#x27;</span>; <span class="comment">-- 产生堆访问</span></span><br><span class="line"># 查看执行计划</span><br><span class="line">explain <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> test3 <span class="keyword">where</span> id <span class="operator">=</span> <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<h1 id="角色-x2F-用户"><a href="#角色-x2F-用户" class="headerlink" title="角色&#x2F;用户"></a>角色&#x2F;用户</h1><p><strong>角色可用属性</strong></p>
+<ul>
+<li>login：登录权限。<code>create role test login;</code></li>
+<li>superuser: 超级管理员权限.<code>create role test superuser;</code></li>
+<li>createdb: 创建数据库的权限。<code>create role test createdb;</code></li>
+<li>replication: 流复制的权限，一个拥有流复制权限的角色也需要被赋予登录的权限。<code>create role test replication login;</code></li>
+<li>password: 设置角色登录密码。<code>create role test password &#39;123456&#39;</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 创建角色</span><br><span class="line"><span class="keyword">create</span> role test password <span class="string">&#x27;testpwd&#x27;</span> login;</span><br><span class="line"># 修改角色</span><br><span class="line"><span class="keyword">create</span> role test superuser;</span><br><span class="line"># 删除角色</span><br><span class="line"><span class="keyword">drop</span> role test;</span><br></pre></td></tr></table></figure>
+
+<h1 id="权限-1"><a href="#权限-1" class="headerlink" title="权限"></a>权限</h1><h2 id="schema"><a href="#schema" class="headerlink" title="schema"></a>schema</h2><p>pg14版本及以前的版本，所有用户对<code>public</code>schema都有<code>CREATE</code>和<code>USAGE</code>的权限，pg15以后取消了<code>CREATE</code>的权限，需要手动授权。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 第一个public表示public schema，第二个public表示所有用户</span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">CREATE</span> <span class="keyword">ON</span> SHCEMA public <span class="keyword">TO</span> PUBLIC;</span><br></pre></td></tr></table></figure>
+
+<p><strong>查询&#x2F;设置搜索路径</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> search_path;</span><br><span class="line"><span class="keyword">SET</span> search_path <span class="keyword">TO</span> myschema,public;</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用pgAdmin"><a href="#使用pgAdmin" class="headerlink" title="使用pgAdmin"></a>使用pgAdmin</h1><h2 id="下载-1"><a href="#下载-1" class="headerlink" title="下载"></a>下载</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># windows客户端下载</span><br><span class="line">https://www.pgadmin.org/download/pgadmin-4-windows/</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="汉化"><a href="#汉化" class="headerlink" title="汉化"></a>汉化</h3><p>File -&gt; preference -&gt; Miscellaneous -&gt; User language</p>
+<p><img src="/pgAdmin%E6%B1%89%E5%8C%96.jpg" alt="pgAdmin汉化"> </p>
+<h3 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h3><ul>
+<li>改动数据库配置</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 修改data目录下pg_hba.conf,增加IPv4配置</span></span><br><span class="line">host    all         all          192.168.100.117/32        trust</span><br><span class="line"><span class="comment"># 2. 修改data目录下的postgresql.conf</span></span><br><span class="line">listen_addresses = <span class="string">&#x27;*&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重启数据库</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/pgsql/bin/pg_ctl restart -D /usr/local/pgsql/data</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>pgAdmin创建连接</li>
+</ul>
+<p><img src="/pgAdmin%E6%B3%A8%E5%86%8C%E6%9C%8D%E5%8A%A1%E5%99%A8.jpg" alt="pgAdmin注册服务器"></p>
+<h1 id="jdbc连接pg"><a href="#jdbc连接pg" class="headerlink" title="jdbc连接pg"></a>jdbc连接pg</h1><h2 id="jar包下载"><a href="#jar包下载" class="headerlink" title="jar包下载"></a>jar包下载</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 下载地址</span><br><span class="line">https://jdbc.postgresql.org/download.html</span><br></pre></td></tr></table></figure>
+
+<h2 id="maven依赖"><a href="#maven依赖" class="headerlink" title="maven依赖"></a>maven依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/org.postgresql/postgresql --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.postgresql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>postgresql<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>42.3.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="jdbc连接查询"><a href="#jdbc连接查询" class="headerlink" title="jdbc连接查询"></a>jdbc连接查询</h2><p><strong>url</strong></p>
+<p><code>jdbc:postgresql://ip:port/dbname?stringtype=unspecified</code></p>
+<ul>
+<li><code>stringtype=unspecified</code>：不指定字符串的类型，而由服务器来推断字符串的类型，默认值为<code>varchar</code>，可用于解决sql参数不能传字符串的问题；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lhx.pg;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.DriverManager;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PgTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注册驱动</span></span><br><span class="line">        Class.forName(<span class="string">&quot;org.postgresql.Driver&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// url: jdbc:postgresql://ip:port/dbname?stringtype=unspecified</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:postgresql://192.168.5.112:5432/genericdb&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">user</span> <span class="operator">=</span> <span class="string">&quot;postgres&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;postgres&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;select * from account&quot;</span>;</span><br><span class="line">        <span class="keyword">try</span> (</span><br><span class="line">                <span class="comment">// 获取连接</span></span><br><span class="line">                <span class="type">Connection</span> <span class="variable">connection</span> <span class="operator">=</span> DriverManager.getConnection(url, user, password);</span><br><span class="line">                <span class="comment">// 获取数据库操作对象</span></span><br><span class="line">                <span class="type">PreparedStatement</span> <span class="variable">preparedStatement</span> <span class="operator">=</span> connection.prepareStatement(sql);</span><br><span class="line">                <span class="comment">// 执行sql</span></span><br><span class="line">                <span class="type">ResultSet</span> <span class="variable">resultSet</span> <span class="operator">=</span> preparedStatement.executeQuery()</span><br><span class="line">            ) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 获取执行结果</span></span><br><span class="line">            <span class="keyword">while</span> (resultSet.next()) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> resultSet.getString(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">                <span class="type">Integer</span> <span class="variable">balance</span> <span class="operator">=</span> resultSet.getInt(<span class="string">&quot;balance&quot;</span>);</span><br><span class="line">                System.out.println(<span class="string">&quot;name: &quot;</span> + name + <span class="string">&quot;, balance: &quot;</span> + balance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="pg搭建主从复制"><a href="#pg搭建主从复制" class="headerlink" title="pg搭建主从复制"></a>pg搭建主从复制</h1><blockquote>
+<p>版本：12.6</p>
+<p>主机：172.19.3.63</p>
+<p>从机：172.19.3.60</p>
+</blockquote>
+<h2 id="主机配置"><a href="#主机配置" class="headerlink" title="主机配置"></a>主机配置</h2><p><strong>创建postgres用户和用户组</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建用户和组，有的安装方式在安装完时会自动创建</span></span><br><span class="line">groupadd postgres</span><br><span class="line">useradd -g postgres postgres</span><br><span class="line"><span class="comment"># 切换用户</span></span><br><span class="line">su postgres</span><br></pre></td></tr></table></figure>
+
+<p><strong>初始化并启动数据库</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./initdb -D /home/postgres/data</span><br><span class="line">./pg_ctl -D /home/postgres/data -l logfile start</span><br><span class="line"><span class="comment"># 连接postgres数据库</span></span><br><span class="line">./psql</span><br></pre></td></tr></table></figure>
+
+<p><strong>创建用于复制的用户</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 主服务器上创建复制用户replicator/itc123，拥有登录和复制权限</span></span><br><span class="line"><span class="keyword">CREATE</span> ROLE replicator LOGIN REPLICATION PASSWORD <span class="string">&#x27;itc123&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改配置文件</strong></p>
+<p><code>/home/postgres/data/pg_hba.conf</code>添加复制用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># Allow replication connections from localhost, by a user with the</span><br><span class="line"># replication privilege.</span><br><span class="line">host 	replication		replicator		172.19.3.60/32			md5</span><br></pre></td></tr></table></figure>
+
+<p><code>/home/postgres/data/postgresql.conf</code>修改配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">listen_addresses = &#x27;*&#x27;</span><br><span class="line">wal_level = replica</span><br><span class="line">archive_mode = on</span><br><span class="line">archive_command = &#x27;test ! -f /home/postgres/data/pgarchive/%f &amp;&amp; cp %p /home/postgres/data/pgarchive/%f&#x27;</span><br><span class="line">max_wal_senders = 2</span><br><span class="line">wal_keep_segments = 64</span><br><span class="line">max_connections = 100</span><br></pre></td></tr></table></figure>
+
+<p><strong>重启主库</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pg_ctl -D /home/postgres/data -l logfile restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="从机配置"><a href="#从机配置" class="headerlink" title="从机配置"></a>从机配置</h2><blockquote>
+<p>从机不用初始化，需要从主机备份数据；若已初始化，删除<code>/home/postgres/data</code></p>
+<p>从机是只读的</p>
+</blockquote>
+<hr>
+<p><strong>创建postgres用户和用户组</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建用户和组，有的安装方式在安装完时会自动创建</span></span><br><span class="line">groupadd postgres</span><br><span class="line">useradd -g postgres postgres</span><br><span class="line"><span class="comment"># 切换用户</span></span><br><span class="line">su postgres</span><br></pre></td></tr></table></figure>
+
+<p><strong>从主库备份数据</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pg_basebackup -h 172.19.3.63 -p 5432 -U replicator -W -F p -R -P -X stream -D /home/postgres/data</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改配置文件</strong></p>
+<p><code>/home/postgres/data/standby.signal</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">standby_mode = &#x27;on&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><code>/home/postgres/data/postgresql.conf</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">primary_conninfo = &#x27;host=172.19.3.63 port=5432 user=replicator password=itc123&#x27;</span><br><span class="line">recovery_target_timeline = &#x27;latest&#x27;</span><br><span class="line">hot_standby = on</span><br><span class="line">max_standby_streaming_delay = 30s</span><br><span class="line">wal_receiver_status_interval = 10s</span><br><span class="line">hot_standby_feedback = on</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动数据库</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pg_ctl -D /home/postgres/data -l logfile start</span><br></pre></td></tr></table></figure>
+
+<h2 id="验证主从"><a href="#验证主从" class="headerlink" title="验证主从"></a>验证主从</h2><p><strong>主从查看复制状态</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 主库查看发送状态</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_stat_replication;</span><br><span class="line"><span class="comment">-- 从库查看接收状态</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> pg_stat_wal_receiver;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 主从库查看复制状态</span></span><br><span class="line">./pg_controldata -D /home/postgres/data/</span><br></pre></td></tr></table></figure>
+
+<p><strong>主库操作</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_test(id serial, name <span class="type">varchar</span>(<span class="number">200</span>));</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_test(name) <span class="keyword">values</span>(<span class="string">&#x27;test1&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test;</span><br></pre></td></tr></table></figure>
+
+<p><strong>从库操作</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_test;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_test(name) <span class="keyword">values</span>(<span class="string">&#x27;test2&#x27;</span>); <span class="comment">-- error,从库只读</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="主从切换"><a href="#主从切换" class="headerlink" title="主从切换"></a>主从切换</h2><p><strong>停止主库</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 模拟故障，停止主库</span></span><br><span class="line">./pg_ctl -D /home/postgres/data -l logfile stop </span><br></pre></td></tr></table></figure>
+
+<p><strong>升级从库为主库</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./pg_ctl promote -D /home/postgres/data</span><br></pre></td></tr></table></figure>
+
+<h1 id="pg异常处理"><a href="#pg异常处理" class="headerlink" title="pg异常处理"></a>pg异常处理</h1><h2 id="启动异常"><a href="#启动异常" class="headerlink" title="启动异常"></a>启动异常</h2><p><strong>异常信息：</strong><code>could not open shared memory segment &quot;/PostgreSQL.1219399659&quot;: Permission denied</code></p>
+<p><strong>解决方法：</strong>修改<code>postgresql.conf</code>中<code>dynamic_shared_memory_type = sysv</code></p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/16/middleware/Oracle%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-16 16:09:56
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" title="数据库">
+                        <b>#</b> 数据库
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/PostgreSQL/" title="PostgreSQL">
+                        <b>#</b> PostgreSQL
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/middleware/ShardingSphere%E5%85%A5%E9%97%A8/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL%E9%83%A8%E7%BD%B2"><span class="toc-text">PostgreSQL部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD"><span class="toc-text">下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">PostgreSQL常用命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">PostgreSQL数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E7%B1%BB%E5%9E%8B"><span class="toc-text">数字类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="toc-text">序数类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B"><span class="toc-text">字符类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E6%9C%9F-x2F-%E6%97%B6%E9%97%B4%E7%B1%BB%E5%9E%8B"><span class="toc-text">日期&#x2F;时间类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%B4%E9%9A%94%E5%8D%95%E4%BD%8D%E7%BC%A9%E5%86%99"><span class="toc-text">间隔单位缩写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B"><span class="toc-text">布尔类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E5%92%8C%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">常用函数和操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9B%B8%E5%85%B3"><span class="toc-text">字符串相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E6%9C%9F-x2F-%E6%97%B6%E9%97%B4%E7%9B%B8%E5%85%B3"><span class="toc-text">日期&#x2F;时间相关</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PostgreSQL%E5%B8%B8%E7%94%A8sql%E8%84%9A%E6%9C%AC"><span class="toc-text">PostgreSQL常用sql脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%88%E6%9C%AC"><span class="toc-text">查看数据库版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E8%A1%A8%E4%BF%A1%E6%81%AF"><span class="toc-text">查看所有表信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%A1%A8"><span class="toc-text">创建表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%99%E8%A1%A8%E3%80%81%E5%88%97%E6%B7%BB%E5%8A%A0%E6%B3%A8%E9%87%8A"><span class="toc-text">给表、列添加注释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95"><span class="toc-text">索引</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E8%A1%A8"><span class="toc-text">修改表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%99%90"><span class="toc-text">权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%8C%BA"><span class="toc-text">分区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2"><span class="toc-text">查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E6%93%8D%E4%BD%9C"><span class="toc-text">事务操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AA%97%E5%8F%A3%E5%87%BD%E6%95%B0"><span class="toc-text">窗口函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A8%E7%BB%A7%E6%89%BF"><span class="toc-text">表继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95-1"><span class="toc-text">索引</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%92%E8%89%B2-x2F-%E7%94%A8%E6%88%B7"><span class="toc-text">角色&#x2F;用户</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9D%83%E9%99%90-1"><span class="toc-text">权限</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#schema"><span class="toc-text">schema</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8pgAdmin"><span class="toc-text">使用pgAdmin</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD-1"><span class="toc-text">下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%89%E5%8C%96"><span class="toc-text">汉化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-text">连接数据库</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#jdbc%E8%BF%9E%E6%8E%A5pg"><span class="toc-text">jdbc连接pg</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#jar%E5%8C%85%E4%B8%8B%E8%BD%BD"><span class="toc-text">jar包下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#maven%E4%BE%9D%E8%B5%96"><span class="toc-text">maven依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#jdbc%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="toc-text">jdbc连接查询</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pg%E6%90%AD%E5%BB%BA%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-text">pg搭建主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E9%85%8D%E7%BD%AE"><span class="toc-text">主机配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E6%9C%BA%E9%85%8D%E7%BD%AE"><span class="toc-text">从机配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E4%B8%BB%E4%BB%8E"><span class="toc-text">验证主从</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E4%BB%8E%E5%88%87%E6%8D%A2"><span class="toc-text">主从切换</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#pg%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-text">pg异常处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E5%BC%82%E5%B8%B8"><span class="toc-text">启动异常</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + PostgreSQL%E5%85%A5%E9%97%A8 + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F16%2Fdb%2FPostgreSQL%25E5%2585%25A5%25E9%2597%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/16/db/PostgreSQL%E5%85%A5%E9%97%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

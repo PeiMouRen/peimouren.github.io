@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      Nacos入门 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">Nacos入门</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-16 15:40:28
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" title="微服务">
+                    <b>#</b> 微服务
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/Nacos/" title="Nacos">
+                    <b>#</b> Nacos
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[TOC]</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><blockquote>
+<p>阿里开源的组件，可与<strong>Spring</strong>、<strong>SpringBoot</strong>、<strong>SpringCloud</strong>、<strong>Docker</strong>、<strong>K8s</strong>等集成，实现<strong>服务注册与发现</strong>、<strong>配置管理</strong>等功能。</p>
+<p>官网地址：<code>https://nacos.io/zh-cn/index.html</code></p>
+<p>github：<code>https://github.com/alibaba/nacos</code></p>
+</blockquote>
+<h1 id="集群环境搭建"><a href="#集群环境搭建" class="headerlink" title="集群环境搭建"></a>集群环境搭建</h1><h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><ol>
+<li>64 bit OS Linux&#x2F;Unix&#x2F;Mac，推荐使用Linux系统。</li>
+<li>64 bit JDK 1.8+。</li>
+<li>3个或3个以上Nacos节点才能构成集群。</li>
+</ol>
+<h3 id="linux配置jdk环境"><a href="#linux配置jdk环境" class="headerlink" title="linux配置jdk环境"></a>linux配置jdk环境</h3><p><strong>下载jdk</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># openjdk下载地址</span><br><span class="line">https://adoptium.net/zh-CN/</span><br></pre></td></tr></table></figure>
+
+<p><strong>解压jdk</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p><strong>设置环境变量</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.bash_profile</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 在文件后添加如下设置，注意路径</span><br><span class="line">JAVA_HOME=/home/nacos/jdk8u322-b06</span><br><span class="line">PATH=$JAVA_HOME/bin:$PATH</span><br><span class="line">export JAVA_HOME</span><br><span class="line">export PATH</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使环境变量生效</span></span><br><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br><span class="line"><span class="comment"># 查看环境变量</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="集群架构"><a href="#集群架构" class="headerlink" title="集群架构"></a>集群架构</h2><p><img src="/nacos%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84.png" alt="nacos集群架构"></p>
+<h2 id="搭建过程"><a href="#搭建过程" class="headerlink" title="搭建过程"></a>搭建过程</h2><p><strong>下载安装包</strong></p>
+<p>地址：<code>https://github.com/alibaba/nacos/releases</code></p>
+<p>本次下载的是2.1.0版本</p>
+<hr>
+<p><strong>解压安装包</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nacos-server-2.1.0.tar.gz</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>配置集群配置文件</strong></p>
+<p>三个节点各自修改配置文件<code>nacos/conf/cluster.conf</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># ip:port</span><br><span class="line">172.19.4.41:8848</span><br><span class="line">172.19.4.42:8848</span><br><span class="line">172.19.4.43:8848</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>设置数据源为mysql</strong></p>
+<blockquote>
+<p>nacos默认使用内置数据源，集群环境下各节点数据可能不一致，所以需要切换为外置数据源，目前只支持mysql。</p>
+</blockquote>
+<p>执行sql脚本<code>conf/nacos-mysql.sql</code>；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 先创建数据库</span><br><span class="line"><span class="keyword">CREATE</span> DATABASE nacos CHARSET utf8;</span><br><span class="line">USE nacos;</span><br><span class="line"># 执行脚本，注意脚本路径</span><br><span class="line">source nacos<span class="operator">-</span>mysql.sql</span><br></pre></td></tr></table></figure>
+
+<p>三个节点分别修改配置文件<code>conf/application.properties</code>;</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这几项在配置文件中都被注释掉了，这里需要去掉注释，并修改属性值即可</span></span><br><span class="line"><span class="attr">spring.datasource.platform</span>=<span class="string">mysql</span></span><br><span class="line"><span class="attr">db.num</span>=<span class="string">1</span></span><br><span class="line"><span class="attr">db.url.0</span>=<span class="string">jdbc:mysql://172.19.4.37:3306/nacos?characterEncoding=utf8&amp;connectTimeout=1000&amp;socketTimeout=3000&amp;autoReconnect=true&amp;useUnicode=true&amp;useSSL=false&amp;serverTimezone=UTC</span></span><br><span class="line"><span class="attr">db.user.0</span>=<span class="string">nacos</span></span><br><span class="line"><span class="attr">db.password.0</span>=<span class="string">itc123</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>配置nginx</strong></p>
+<p>修改<code>conf/nginx.conf</code>配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"># 需要有nginx stream模块，用于转发nacos2.0版本的grpc请求</span><br><span class="line">stream &#123;</span><br><span class="line">	</span><br><span class="line">	upstream nacos-server-grpc &#123;</span><br><span class="line">		server 172.19.4.41:9848;</span><br><span class="line">		server 172.19.4.42:9848;</span><br><span class="line">		server 172.19.4.43:9848;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	server &#123;</span><br><span class="line">		listen			9848;</span><br><span class="line">		proxy_pass http://nacos9848;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">	</span><br><span class="line">	# 其他内容</span><br><span class="line"></span><br><span class="line">    upstream nacos &#123;</span><br><span class="line">        server 172.19.4.41:8848;</span><br><span class="line">        server 172.19.4.42:8848;</span><br><span class="line">        server 172.19.4.43:8848;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen			8848;</span><br><span class="line">        server_name		nacos_server;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://nacos;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    # 其他内容</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>启动nginx</p>
+<p><code>nginx/sbin/nginx</code></p>
+<hr>
+<p><strong>启动nacos服务器</strong></p>
+<p>三个节点分别执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> nacos</span><br><span class="line">sh bin/startup.sh</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>验证集群</strong></p>
+<p>控制台访问</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url:http://nginxip:8848/nacos</span><br><span class="line">account:nacos/nacos</span><br></pre></td></tr></table></figure>
+
+<p><img src="/nacos%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%AE%BF%E9%97%AE.png" alt="nacos控制台访问"></p>
+<p><img src="/nacos%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9.png" alt="nacos集群节点"></p>
+<h1 id="使用Nacos作为配置中心"><a href="#使用Nacos作为配置中心" class="headerlink" title="使用Nacos作为配置中心"></a>使用Nacos作为配置中心</h1><h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><ul>
+<li>nacos用<strong>namespace + group id + data id</strong>来标识唯一的配置；</li>
+</ul>
+<p><img src="/%E6%A0%87%E8%AF%86%E5%94%AF%E4%B8%80%E9%85%8D%E7%BD%AE.png" alt="标识唯一配置"></p>
+<ul>
+<li>namespace可用于区分环境，如dev、test、pro等；</li>
+<li>支持text、json、xml、yaml、html、properties等格式的配置文件；</li>
+</ul>
+<h2 id="与Spring集成"><a href="#与Spring集成" class="headerlink" title="与Spring集成"></a>与Spring集成</h2><blockquote>
+<p>官方地址：<code>https://github.com/nacos-group/nacos-spring-project</code></p>
+</blockquote>
+<h3 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jdk: 1.8+</span><br><span class="line">spring: 3.2+</span><br></pre></td></tr></table></figure>
+
+<p><strong>Maven坐标</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/com.alibaba.nacos/nacos-spring-context --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.nacos<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>nacos-spring-context<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>配置类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="comment">// 开启nacos配置</span></span><br><span class="line"><span class="meta">@EnableNacosConfig(globalProperties = @NacosProperties(</span></span><br><span class="line"><span class="meta">        serverAddr = &quot;172.19.4.41:8848,172.19.4.42:8848,172.19.4.43:8848&quot;,</span></span><br><span class="line"><span class="meta">        username = &quot;nacos&quot;, password = &quot;nacos&quot;, namespace = &quot;9e50602c-2575-4761-8166-290af5da5044&quot;</span></span><br><span class="line"><span class="meta">))</span></span><br><span class="line"><span class="comment">// 通过groupId和dataId加载配置文件</span></span><br><span class="line"><span class="meta">@NacosPropertySource(groupId = &quot;DEFAULT_GROUP&quot;, dataId = &quot;ir1&quot;, type = ConfigType.YAML, autoRefreshed = true)</span></span><br><span class="line"><span class="meta">@NacosPropertySource(groupId = &quot;DEFAULT_GROUP&quot;, dataId = &quot;ir2&quot;, type = ConfigType.YAML, autoRefreshed = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">NacosConfig</span> &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>nacos配置</strong></p>
+<p>在<code>dev</code>下添加配置：</p>
+<p><img src="/%E6%B7%BB%E5%8A%A0%E9%85%8D%E7%BD%AE.png" alt="添加配置"></p>
+<p><code>ir1</code>配置详情：</p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E8%AF%A6%E6%83%851.png" alt="配置详情1"></p>
+<p><code>ir2</code>配置详情：</p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E8%AF%A6%E6%83%852.png" alt="配置详情2"></p>
+<hr>
+<p><strong>获取配置</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;config&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConfigController</span> &#123;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 使用@NacosValue注解获取配置，开启自动刷新</span></span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;sso.service&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String ssoService;</span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;sso.server.login-url&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String ssoServerLoginUrl;</span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;sso.server.prefix-url&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String ssoServerPrefixUrl;</span><br><span class="line">    <span class="comment">// 默认值为hi</span></span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;hello:hi&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String hello;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/get&quot;, method = GET)</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> ssoService + <span class="string">&quot; - &quot;</span> + ssoServerLoginUrl + <span class="string">&quot; - &quot;</span> + </span><br><span class="line">            ssoServerPrefixUrl + <span class="string">&quot; - &quot;</span> + hello;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>浏览器访问<code>http://ip:port/config/get</code>；</p>
+<hr>
+<p><strong>修改配置</strong></p>
+<p>在控制台修改配置：</p>
+<p><img src="/%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE.png" alt="编辑配置"></p>
+<hr>
+<p><strong>再次获取配置</strong></p>
+<p>浏览器再次访问<code>http://ip:port/config/get</code>，此时获取到更新后的配置。</p>
+<h2 id="与Spring-Boot集成"><a href="#与Spring-Boot集成" class="headerlink" title="与Spring Boot集成"></a>与Spring Boot集成</h2><blockquote>
+<p>官方地址：<code>https://github.com/nacos-group/nacos-spring-boot-project</code></p>
+</blockquote>
+<p><strong>Maven坐标</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/com.alibaba.boot/nacos-config-spring-boot-starter --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>nacos-config-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.2.11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>application.yml配置</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nacos:</span></span><br><span class="line">  <span class="attr">config:</span></span><br><span class="line">    <span class="comment"># nacos server地址</span></span><br><span class="line">    <span class="comment"># 因为nginx没有配置stream模块，所以没有使用nginx代理的地址，而是直接使用nacos集群的地址</span></span><br><span class="line">    <span class="attr">server-addr:</span> <span class="number">172.19</span><span class="number">.4</span><span class="number">.41</span><span class="string">:8848,172.19.4.42:8848,172.19.4.43:8848</span></span><br><span class="line">    <span class="attr">bootstrap:</span></span><br><span class="line">      <span class="attr">enable:</span> <span class="literal">true</span> <span class="comment"># 开启配置预加载功能</span></span><br><span class="line">    <span class="attr">remote-first:</span> <span class="literal">true</span> <span class="comment"># 设置nacos上的配置优先于本地配置</span></span><br><span class="line">    <span class="attr">namespace:</span> <span class="string">9e50602c-2575-4761-8166-290af5da5044</span> <span class="comment"># 命名空间id</span></span><br><span class="line">    <span class="attr">group:</span> <span class="string">group1</span> <span class="comment"># group id</span></span><br><span class="line">    <span class="attr">data-ids:</span> <span class="string">test1.yml</span> <span class="comment"># data id，多个用逗号隔开</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">yaml</span> <span class="comment"># 配置文件类型</span></span><br><span class="line">    <span class="attr">auto-refresh:</span> <span class="literal">true</span>  <span class="comment"># 开启自动刷新</span></span><br><span class="line">    <span class="attr">max-retry:</span> <span class="number">10</span> <span class="comment"># 最大重试次数</span></span><br><span class="line">    <span class="attr">config-retry-time:</span> <span class="number">2333</span> <span class="comment"># 重试时间</span></span><br><span class="line">    <span class="attr">config-long-poll-timeout:</span> <span class="number">46000</span> <span class="comment"># 监听长轮询超时时间</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">nacos</span> <span class="comment"># 用户名</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">nacos</span> <span class="comment"># 密码</span></span><br><span class="line">    <span class="comment"># 加载其他配置，类似@NacosPropertySource()</span></span><br><span class="line">    <span class="attr">ext-config:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">namespace:</span> <span class="string">9e50602c-2575-4761-8166-290af5da5044</span></span><br><span class="line">        <span class="attr">group:</span> <span class="string">group2</span></span><br><span class="line">        <span class="attr">data-ids:</span> <span class="string">test2.yml</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">yaml</span></span><br><span class="line">        <span class="attr">auto-refresh:</span> <span class="literal">true</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">namespace:</span> <span class="string">9e50602c-2575-4761-8166-290af5da5044</span></span><br><span class="line">        <span class="attr">group:</span> <span class="string">group3</span></span><br><span class="line">        <span class="attr">data-ids:</span> <span class="string">test3.yml</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">yaml</span></span><br><span class="line">        <span class="attr">auto-refresh:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>nacos配置</strong></p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B1.png" alt="配置示例1"></p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B2.png" alt="配置示例2"></p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B3.png" alt="配置示例3"></p>
+<p><img src="/%E9%85%8D%E7%BD%AE%E7%A4%BA%E4%BE%8B4.png" alt="配置示例4"></p>
+<p><strong>获取属性值</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.nacos.api.config.ConfigType;</span><br><span class="line"><span class="keyword">import</span> com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@NacosConfigurationProperties(groupId = &quot;group1&quot;, dataId = &quot;test1.yml&quot;, prefix = &quot;people&quot;, type = ConfigType.YAML, autoRefreshed = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PeopleConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> String sex;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// getter、setter、toString</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.nacos.api.config.annotation.NacosValue;</span><br><span class="line"><span class="keyword">import</span> com.lhx.nacosconfigdemo.config.PeopleConfig;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/config&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConfigController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;hello:hi&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String hello;</span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;count:-1&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> count;</span><br><span class="line">    <span class="meta">@NacosValue(value = &quot;$&#123;ping:unknow&#125;&quot;, autoRefreshed = true)</span></span><br><span class="line">    <span class="keyword">private</span> String ping;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> PeopleConfig peopleConfig;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/get&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">get</span><span class="params">()</span> &#123;</span><br><span class="line">        System.out.println(peopleConfig);</span><br><span class="line">        System.out.println(hello);</span><br><span class="line">        System.out.println(count);</span><br><span class="line">        System.out.println(ping);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>浏览器请求<code>http://localhost:8080/config/get</code>;</p>
+<hr>
+<p><strong>编辑配置</strong></p>
+<p> 在控制台编辑配置：</p>
+<p><img src="/%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE2.png" alt="编辑配置2"></p>
+<hr>
+<p><strong>再次获取配置</strong></p>
+<p>浏览器再次请求<code>http://localhost:8080/config/get</code>，成功从配置中心获取到更新后的配置；</p>
+<h1 id="维护Nacos配置中心"><a href="#维护Nacos配置中心" class="headerlink" title="维护Nacos配置中心"></a>维护Nacos配置中心</h1><blockquote>
+<p>方法：</p>
+<ul>
+<li>登录到nacos控制台维护配置；</li>
+<li>使用open api维护配置；</li>
+</ul>
+</blockquote>
+<h2 id="使用控制台编辑配置"><a href="#使用控制台编辑配置" class="headerlink" title="使用控制台编辑配置"></a>使用控制台编辑配置</h2><blockquote>
+<p>控制台手册：<code>https://nacos.io/zh-cn/docs/console-guide.html</code></p>
+</blockquote>
+<p>浏览器访问<code>http://nacos-server-ip:port/nacos</code>，输入初始账号密码<code>nacos/nacos</code>后登录到nacos控制台；</p>
+<p><img src="/%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%99%BB%E5%BD%95.png" alt="控制台登录"></p>
+<p>在控制台<strong>配置管理</strong>处编辑配置信息；</p>
+<p><img src="/%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE3.png" alt="编辑配置3"></p>
+<h2 id="使用Open-API编辑配置"><a href="#使用Open-API编辑配置" class="headerlink" title="使用Open API编辑配置"></a>使用Open API编辑配置</h2><blockquote>
+<p>api指南：<code>https://nacos.io/zh-cn/docs/open-api.html</code></p>
+</blockquote>
+<h3 id="获取配置"><a href="#获取配置" class="headerlink" title="获取配置"></a>获取配置</h3><p>请求方式：GET</p>
+<p>URL：&#x2F;nacos&#x2F;v1&#x2F;cs&#x2F;configs</p>
+<p>请求参数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">类型</th>
+<th align="left">是否必须</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">tenant</td>
+<td align="left">string</td>
+<td align="left">否</td>
+<td align="left">租户信息，对应 Nacos 的命名空间ID字段。</td>
+</tr>
+<tr>
+<td align="left">dataId</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置 ID。</td>
+</tr>
+<tr>
+<td align="left">group</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置分组。</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET <span class="string">&#x27;http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.example&amp;group=com.alibaba.nacos&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="发布-x2F-更新配置"><a href="#发布-x2F-更新配置" class="headerlink" title="发布&#x2F;更新配置"></a>发布&#x2F;更新配置</h3><p>请求方式：POST</p>
+<p>URL：&#x2F;nacos&#x2F;v1&#x2F;cs&#x2F;configs</p>
+<p>请求参数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">类型</th>
+<th align="left">是否必须</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">tenant</td>
+<td align="left">string</td>
+<td align="left">否</td>
+<td align="left">租户信息，对应 Nacos 的命名空间ID字段</td>
+</tr>
+<tr>
+<td align="left">dataId</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置 ID</td>
+</tr>
+<tr>
+<td align="left">group</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置分组</td>
+</tr>
+<tr>
+<td align="left">content</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置内容</td>
+</tr>
+<tr>
+<td align="left">type</td>
+<td align="left">String</td>
+<td align="left">否</td>
+<td align="left">配置类型，yaml、json、xml、text、properties等</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST <span class="string">&#x27;http://127.0.0.1:8848/nacos/v1/cs/configs&#x27;</span> -d <span class="string">&#x27;dataId=nacos.example&amp;group=com.alibaba.nacos&amp;content=contentTest&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除配置"><a href="#删除配置" class="headerlink" title="删除配置"></a>删除配置</h3><p>请求方式：DELETE</p>
+<p>URL：&#x2F;nacos&#x2F;v1&#x2F;cs&#x2F;configs</p>
+<p>请求参数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">类型</th>
+<th align="left">是否必须</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">tenant</td>
+<td align="left">string</td>
+<td align="left">否</td>
+<td align="left">租户信息，对应 Naocs 的命名空间ID字段</td>
+</tr>
+<tr>
+<td align="left">dataId</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置 ID</td>
+</tr>
+<tr>
+<td align="left">group</td>
+<td align="left">string</td>
+<td align="left">是</td>
+<td align="left">配置分组</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X DELETE <span class="string">&#x27;http://127.0.0.1:8848/nacos/v1/cs/configs?dataId=nacos.example&amp;group=com.alibaba.nacos&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/16/db/MySQL%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-16 15:40:28
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" title="微服务">
+                        <b>#</b> 微服务
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/Nacos/" title="Nacos">
+                        <b>#</b> Nacos
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/middleware/Oracle%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-text">集群环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-text">环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#linux%E9%85%8D%E7%BD%AEjdk%E7%8E%AF%E5%A2%83"><span class="toc-text">linux配置jdk环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84"><span class="toc-text">集群架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-text">搭建过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Nacos%E4%BD%9C%E4%B8%BA%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83"><span class="toc-text">使用Nacos作为配置中心</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E6%98%8E"><span class="toc-text">说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8ESpring%E9%9B%86%E6%88%90"><span class="toc-text">与Spring集成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%88%E6%9C%AC"><span class="toc-text">版本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8ESpring-Boot%E9%9B%86%E6%88%90"><span class="toc-text">与Spring Boot集成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%B4%E6%8A%A4Nacos%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83"><span class="toc-text">维护Nacos配置中心</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A7%E5%88%B6%E5%8F%B0%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE"><span class="toc-text">使用控制台编辑配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Open-API%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE"><span class="toc-text">使用Open API编辑配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E9%85%8D%E7%BD%AE"><span class="toc-text">获取配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%91%E5%B8%83-x2F-%E6%9B%B4%E6%96%B0%E9%85%8D%E7%BD%AE"><span class="toc-text">发布&#x2F;更新配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E9%85%8D%E7%BD%AE"><span class="toc-text">删除配置</span></a></li></ol></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + Nacos%E5%85%A5%E9%97%A8 + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F16%2Fmicroservice%2FNacos%25E5%2585%25A5%25E9%2597%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/16/microservice/Nacos%E5%85%A5%E9%97%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

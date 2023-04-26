@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      MinIO入门 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">MinIO入门</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-08-16 15:18:53
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                    <b>#</b> 中间件
+                  </a>
+                </span>
+                
+                <span class="span--category">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                    <b>#</b> 分布式文件存储
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/MinIO/" title="MinIO">
+                    <b>#</b> MinIO
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                    <b>#</b> 分布式文件存储
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[TOC]</p>
+<h1 id="1-单机环境"><a href="#1-单机环境" class="headerlink" title="1. 单机环境"></a>1. 单机环境</h1><h2 id="1-1-版本"><a href="#1-1-版本" class="headerlink" title="1.1. 版本"></a>1.1. 版本</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Linux:CentOS7</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-步骤"><a href="#1-2-步骤" class="headerlink" title="1.2. 步骤"></a>1.2. 步骤</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查是否有wget</span></span><br><span class="line">wget -V</span><br><span class="line"><span class="comment"># 没有的话安装一下</span></span><br><span class="line">yum -y install wget</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载资源（不同架构的系统有不同的url）</span></span><br><span class="line">wget https://dl.min.io/server/minio/release/linux-amd64/minio</span><br><span class="line"><span class="comment"># 添加执行权限</span></span><br><span class="line"><span class="built_in">chmod</span> +x minio</span><br><span class="line"><span class="comment"># 启动minio server，/data为自定义存储minio数据的目录</span></span><br><span class="line">./minio server /data</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-验证"><a href="#1-3-验证" class="headerlink" title="1.3. 验证"></a>1.3. 验证</h2><p>浏览器访问<code>http://192.168.5.112:9000 </code>，使用root账号<code>minioadmin/minioadmin</code>登录成功即可。</p>
+<p><strong>浏览器访问不到的话，检查服务器是否开放端口。</strong></p>
+<h1 id="2-集群环境"><a href="#2-集群环境" class="headerlink" title="2. 集群环境"></a>2. 集群环境</h1><h2 id="2-1-参考资料"><a href="#2-1-参考资料" class="headerlink" title="2.1. 参考资料"></a>2.1. 参考资料</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># MinIO纠删码入门</span><br><span class="line">https://docs.min.io/docs/minio-erasure-code-quickstart-guide.html</span><br><span class="line"># MinIO分布式入门</span><br><span class="line">https://docs.min.io/docs/distributed-minio-quickstart-guide.html</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-搭建要点"><a href="#2-2-搭建要点" class="headerlink" title="2.2. 搭建要点"></a>2.2. 搭建要点</h2><ul>
+<li>分布式Minio采用 <a target="_blank" rel="noopener" href="http://docs.minio.org.cn/docs/master/minio-erasure-code-quickstart-guide">纠删码</a>来防范多个节点宕机和<a target="_blank" rel="noopener" href="https://github.com/minio/minio/blob/master/docs/zh_CN/erasure/README.md#what-is-bit-rot-protection">位衰减<code>bit rot</code></a>。</li>
+<li>使用分布式Minio自动引入了纠删码功能。</li>
+<li>MinIO 将提供的硬盘划分为<em>4 到 16 个</em>硬盘的纠删码集，因此，搭建集群提供的硬盘数量必须是这些数字之一的倍数，每个对象都被写入一个单独的纠删码集。</li>
+<li>Minio 使用最大可能的 纠删码集大小，它分为给定的硬盘数量。例如，<em>18 个硬盘</em>配置为<em>2 组 9 个硬盘</em>，<em>24 个硬盘</em>配置为<em>2 组 12 个硬盘</em>。</li>
+<li>建议运行分布式 MinIO 设置的所有节点是同质的，即相同的操作系统、相同数量的磁盘和相同的网络互连。</li>
+<li>单机Minio服务存在单点故障，相反，如果是一个有N块硬盘的分布式Minio,只要有N&#x2F;2硬盘在线，你的数据就是安全的。不过你需要至少有N&#x2F;2+1个硬盘来创建新的对象。</li>
+<li>Minio在分布式和单机模式下，所有读写操作都严格遵守<strong>read-after-write</strong>一致性模型。</li>
+<li>分布式Minio里的节点时间差不能超过15分钟，你可以使用<a target="_blank" rel="noopener" href="http://www.ntp.org/">NTP</a> 来保证时间一致。</li>
+<li>分布式Minio使用的磁盘可以与其他程序共享，但是要新建一个目录用来存放MinIO的数据。</li>
+<li>所有运行分布式 MinIO 的节点都应该共享一个共同的根凭证，以便节点相互连接和信任。为此，建议在执行 MinIO 服务器命令之前，在所有节点上将<code>MINIO_ROOT_USER</code>和 <code>MINIO_ROOT_PASSWORD</code>导出为环境变量，如果未导出，可使用默认用户<code>minioadmin/minioadmin</code>。</li>
+</ul>
+<h2 id="2-3-步骤"><a href="#2-3-步骤" class="headerlink" title="2.3. 步骤"></a>2.3. 步骤</h2><p>本次启动MinIO集群实例为四个节点，每个节点一块硬盘，在四个节点上分别执行如下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /data/minio是自定义的存储路径</span></span><br><span class="line"><span class="built_in">export</span> MINIO_ROOT_USER=admin</span><br><span class="line"><span class="built_in">export</span> MINIO_ROOT_PASSWORD=12345678</span><br><span class="line">./minio server http://192.168.5.110/data/minio \</span><br><span class="line">			   http://192.168.5.111/data/minio \</span><br><span class="line">			   http://192.168.5.112/data/minio \</span><br><span class="line">			   http://192.168.5.121/data/minio</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-验证"><a href="#2-4-验证" class="headerlink" title="2.4. 验证"></a>2.4. 验证</h2><p>浏览器访问任意服务器的<code>9000</code>端口，使用root账号<code>admin/12345678</code>登录，查看集群状态。</p>
+<p><img src="/minio%E9%9B%86%E7%BE%A4.jpg" alt="minio集群"></p>
+<h1 id="3-java客户端集成"><a href="#3-java客户端集成" class="headerlink" title="3. java客户端集成"></a>3. java客户端集成</h1><h2 id="3-1-引入依赖"><a href="#3-1-引入依赖" class="headerlink" title="3.1. 引入依赖"></a>3.1. 引入依赖</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/io.minio/minio --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.minio<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>minio<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>8.3.9<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-上传文件"><a href="#3-2-上传文件" class="headerlink" title="3.2. 上传文件"></a>3.2. 上传文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.minio.*;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileUploader</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">endPoint</span> <span class="operator">=</span> <span class="string">&quot;http://192.168.5.112:9000&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootUser</span> <span class="operator">=</span> <span class="string">&quot;admin&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootPassword</span> <span class="operator">=</span> <span class="string">&quot;12345678&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">bucketName</span> <span class="operator">=</span> <span class="string">&quot;first-bucket&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建客户端对象</span></span><br><span class="line">        <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient</span><br><span class="line">                .builder()</span><br><span class="line">                .endpoint(endPoint)</span><br><span class="line">                .credentials(rootUser, rootPassword)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建bucket</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">found</span> <span class="operator">=</span> minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());</span><br><span class="line">        <span class="keyword">if</span> (found) &#123;</span><br><span class="line">            System.out.println(bucketName + <span class="string">&quot; exists&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());</span><br><span class="line">            System.out.println(bucketName + <span class="string">&quot; created&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 上传文件</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过文件流上传</span></span><br><span class="line">        <span class="type">File</span> <span class="variable">file</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\刘德华 - 暗里着迷 (Live).mp3&quot;</span>);</span><br><span class="line">        <span class="type">long</span> <span class="variable">fileSize</span> <span class="operator">=</span> file.length();</span><br><span class="line">        System.out.println(<span class="string">&quot;file size: &quot;</span> + fileSize);</span><br><span class="line">        <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(file);</span><br><span class="line">        <span class="type">ObjectWriteResponse</span> <span class="variable">objectWriteResponse</span> <span class="operator">=</span> minioClient.putObject(PutObjectArgs.builder()</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/anlizhaomi.mp3&quot;</span>)</span><br><span class="line">                .stream(fileInputStream, fileSize, -<span class="number">1</span>)</span><br><span class="line">                .contentType(<span class="string">&quot;audio/mp3&quot;</span>)</span><br><span class="line">                .build());</span><br><span class="line">        fileInputStream.close();</span><br><span class="line">        System.out.println(<span class="string">&quot;上传结果：&quot;</span> + objectWriteResponse.etag() + <span class="string">&quot; &quot;</span> + objectWriteResponse.versionId());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过文件上传</span></span><br><span class="line">        objectWriteResponse = minioClient.uploadObject(UploadObjectArgs.builder()</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/anlizhaomi_1.mp3&quot;</span>)</span><br><span class="line">                .filename(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\刘德华 - 暗里着迷 (Live).mp3&quot;</span>)</span><br><span class="line">                .contentType(<span class="string">&quot;audio/mp3&quot;</span>)</span><br><span class="line">                .build());</span><br><span class="line">        System.out.println(<span class="string">&quot;上传结果：&quot;</span> + objectWriteResponse.etag() + <span class="string">&quot; &quot;</span> + objectWriteResponse.versionId());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-下载文件"><a href="#3-3-下载文件" class="headerlink" title="3.3. 下载文件"></a>3.3. 下载文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.minio.DownloadObjectArgs;</span><br><span class="line"><span class="keyword">import</span> io.minio.GetObjectArgs;</span><br><span class="line"><span class="keyword">import</span> io.minio.GetObjectResponse;</span><br><span class="line"><span class="keyword">import</span> io.minio.MinioClient;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.BufferedOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileDownLoader</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">endPoint</span> <span class="operator">=</span> <span class="string">&quot;http://192.168.5.112:9000&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootUser</span> <span class="operator">=</span> <span class="string">&quot;admin&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootPassword</span> <span class="operator">=</span> <span class="string">&quot;12345678&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">bucketName</span> <span class="operator">=</span> <span class="string">&quot;first-bucket&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建客户端对象</span></span><br><span class="line">        <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient</span><br><span class="line">                .builder()</span><br><span class="line">                .endpoint(endPoint)</span><br><span class="line">                .credentials(rootUser, rootPassword)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 下载文件</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过流下载</span></span><br><span class="line">        <span class="type">GetObjectResponse</span> <span class="variable">stream</span> <span class="operator">=</span> minioClient.getObject(GetObjectArgs</span><br><span class="line">                .builder()</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/anlizhaomi.mp3&quot;</span>)</span><br><span class="line">                .build());</span><br><span class="line">        <span class="type">BufferedInputStream</span> <span class="variable">bufferedInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedInputStream</span>(stream);</span><br><span class="line">        <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\aa.mp3&quot;</span>);</span><br><span class="line">        <span class="type">BufferedOutputStream</span> <span class="variable">bufferedOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedOutputStream</span>(fileOutputStream);</span><br><span class="line">        <span class="type">byte</span>[] bytes = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="type">int</span> length;</span><br><span class="line">        <span class="keyword">while</span> ((length = bufferedInputStream.read(bytes)) != -<span class="number">1</span>) &#123;</span><br><span class="line">            bufferedOutputStream.write(bytes, <span class="number">0</span>, length);</span><br><span class="line">        &#125;</span><br><span class="line">        bufferedInputStream.close();</span><br><span class="line">        stream.close();</span><br><span class="line">        bufferedOutputStream.close();</span><br><span class="line">        fileOutputStream.close();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过文件下载</span></span><br><span class="line">        minioClient.downloadObject(DownloadObjectArgs</span><br><span class="line">                .builder()</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/anlizhaomi_1.mp3&quot;</span>)</span><br><span class="line">                .filename(<span class="string">&quot;C:\\Users\\Administrator\\Desktop\\bb.mp3&quot;</span>)</span><br><span class="line">                .build());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-删除文件"><a href="#3-3-删除文件" class="headerlink" title="3.3. 删除文件"></a>3.3. 删除文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.minio.MinioClient;</span><br><span class="line"><span class="keyword">import</span> io.minio.RemoveObjectArgs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileDeleter</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">endPoint</span> <span class="operator">=</span> <span class="string">&quot;http://192.168.5.112:9000&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootUser</span> <span class="operator">=</span> <span class="string">&quot;admin&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootPassword</span> <span class="operator">=</span> <span class="string">&quot;12345678&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">bucketName</span> <span class="operator">=</span> <span class="string">&quot;first-bucket&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建客户端对象</span></span><br><span class="line">        <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient</span><br><span class="line">                .builder()</span><br><span class="line">                .endpoint(endPoint)</span><br><span class="line">                .credentials(rootUser, rootPassword)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 删除文件</span></span><br><span class="line">        minioClient.removeObject(RemoveObjectArgs</span><br><span class="line">                .builder()</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/anlizhaomi.mp3&quot;</span>)</span><br><span class="line">                .build());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-浏览器预览文件"><a href="#3-4-浏览器预览文件" class="headerlink" title="3.4. 浏览器预览文件"></a>3.4. 浏览器预览文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.minio.GetPresignedObjectUrlArgs;</span><br><span class="line"><span class="keyword">import</span> io.minio.MinioClient;</span><br><span class="line"><span class="keyword">import</span> io.minio.http.Method;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FilePreviewUrl</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">endPoint</span> <span class="operator">=</span> <span class="string">&quot;http://192.168.5.112:9000&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootUser</span> <span class="operator">=</span> <span class="string">&quot;admin&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">rootPassword</span> <span class="operator">=</span> <span class="string">&quot;12345678&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">bucketName</span> <span class="operator">=</span> <span class="string">&quot;first-bucket&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建客户端对象</span></span><br><span class="line">        <span class="type">MinioClient</span> <span class="variable">minioClient</span> <span class="operator">=</span> MinioClient</span><br><span class="line">                .builder()</span><br><span class="line">                .endpoint(endPoint)</span><br><span class="line">                .credentials(rootUser, rootPassword)</span><br><span class="line">                .build();</span><br><span class="line">		<span class="comment">// 直接拿这个url到浏览器访问即可</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs</span><br><span class="line">                .builder()</span><br><span class="line">                .method(Method.GET)</span><br><span class="line">                .bucket(bucketName)</span><br><span class="line">                .object(<span class="string">&quot;/music/浏览器下载文件.jpg&quot;</span>)</span><br><span class="line">                .expiry(<span class="number">2</span>, TimeUnit.MINUTES)</span><br><span class="line">                .build());</span><br><span class="line">        System.out.println(<span class="string">&quot;url: &quot;</span> + url);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-与FastDFS比较"><a href="#4-与FastDFS比较" class="headerlink" title="4. 与FastDFS比较"></a>4. 与FastDFS比较</h1><ul>
+<li>同为开源项目，MinIO社区较活跃。</li>
+<li>MinIO有官网、详细的文档及主流开发语言的SDK。</li>
+<li>MinIO读&#x2F;写速度上可达183 GB &#x2F; 秒 和 171 GB &#x2F; 秒。</li>
+<li>MinIO有自带的web控制台界面。</li>
+<li>MinIO安装部署比较简单。</li>
+<li>MinIO可与云原生应用高度集成。</li>
+</ul>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/08/16/system/Linux%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-08-16 15:18:53
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" title="中间件">
+                        <b>#</b> 中间件
+                      </a>
+                    </span>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                        <b>#</b> 分布式文件存储
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/MinIO/" title="MinIO">
+                        <b>#</b> MinIO
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8/" title="分布式文件存储">
+                        <b>#</b> 分布式文件存储
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/08/16/middleware/MySQL%E8%BF%81%E7%A7%BB%E8%87%B3PostgreSQL/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%8D%95%E6%9C%BA%E7%8E%AF%E5%A2%83"><span class="toc-text">1. 单机环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E7%89%88%E6%9C%AC"><span class="toc-text">1.1. 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E6%AD%A5%E9%AA%A4"><span class="toc-text">1.2. 步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E9%AA%8C%E8%AF%81"><span class="toc-text">1.3. 验证</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E9%9B%86%E7%BE%A4%E7%8E%AF%E5%A2%83"><span class="toc-text">2. 集群环境</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-text">2.1. 参考资料</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E6%90%AD%E5%BB%BA%E8%A6%81%E7%82%B9"><span class="toc-text">2.2. 搭建要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E6%AD%A5%E9%AA%A4"><span class="toc-text">2.3. 步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E9%AA%8C%E8%AF%81"><span class="toc-text">2.4. 验证</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-java%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%9B%86%E6%88%90"><span class="toc-text">3. java客户端集成</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%BC%95%E5%85%A5%E4%BE%9D%E8%B5%96"><span class="toc-text">3.1. 引入依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-text">3.2. 上传文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="toc-text">3.3. 下载文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6"><span class="toc-text">3.3. 删除文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-%E6%B5%8F%E8%A7%88%E5%99%A8%E9%A2%84%E8%A7%88%E6%96%87%E4%BB%B6"><span class="toc-text">3.4. 浏览器预览文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E4%B8%8EFastDFS%E6%AF%94%E8%BE%83"><span class="toc-text">4. 与FastDFS比较</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + MinIO%E5%85%A5%E9%97%A8 + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F08%2F16%2Fmiddleware%2FMinIO%25E5%2585%25A5%25E9%2597%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/08/16/middleware/MinIO%E5%85%A5%E9%97%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

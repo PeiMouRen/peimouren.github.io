@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN,en,ja,default" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="keywords" content="" />
+  <meta name="author" content="pxz" />
+  <meta name="description" content="" />
+  
+  
+  <title>
+    
+      cas入门 
+      
+      
+      |
+    
+     pxz
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  
+<link rel="stylesheet" href="/css/color-scheme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/comments.css">
+
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">pxz</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">cas入门</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime" title="更新时间"></i>
+          2022-09-09 09:37:53
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="分类"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/" title="单点登录">
+                    <b>#</b> 单点登录
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags" title="标签"></i>
+                
+                <span class="span--tag">
+                  <a href="/tags/sso/" title="sso">
+                    <b>#</b> sso
+                  </a>
+                </span>
+                
+                <span class="span--tag">
+                  <a href="/tags/cas/" title="cas">
+                    <b>#</b> cas
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>[toc]</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><code>CAS</code>，即<code>Central Authentication Service</code>，是一个开源的企业多语言单点登录的解决方案。</p>
+<p>github:<code>https://github.com/apereo/cas</code></p>
+<p>home:<code>https://www.apereo.org/projects/cas</code></p>
+<h1 id="CAS协议"><a href="#CAS协议" class="headerlink" title="CAS协议"></a>CAS协议</h1><ul>
+<li><code>TGT(Ticket Granting Ticket)</code>: 代表用户的一个<code>sso session</code>会话。</li>
+<li>TGC: 保存<code>TGT</code>的<code>cookie</code>。</li>
+<li><code>ST(Service Ticket)</code>: 作为参数放在<code>url</code>中传递，代表用户访问应用的凭证。</li>
+</ul>
+<p><img src="/cas%E6%B5%81%E7%A8%8B.png" alt="cas流程图"></p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><blockquote>
+<p>cas6版本后基于gradle构建代码，并推荐使用<code>waroverlay</code>的方式来进行使用和开发。</p>
+<p>war overlay简介：<code>https://maven.apache.org/plugins/maven-war-plugin/overlays.html</code></p>
+<p>即相同目录、相同文件名的内容会被覆盖掉，可做针对型开发。</p>
+</blockquote>
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><p><code>cas:6.4</code>、<code>jdk:11</code></p>
+<h2 id="获取代码"><a href="#获取代码" class="headerlink" title="获取代码"></a>获取代码</h2><p>项目<code>README.md</code>中介绍了可以使用的<code>task</code>，但有一些不能使用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b 6.4 https://github.com/apereo/cas-overlay-template.git</span><br><span class="line"><span class="built_in">cd</span> cas-overlay-template</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] clean build</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后会生成<code>build</code>目录，包含war包、配置文件等信息。</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><h3 id="使用内部容器运行"><a href="#使用内部容器运行" class="headerlink" title="使用内部容器运行"></a>使用内部容器运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] run </span><br></pre></td></tr></table></figure>
+
+<p>启动后访问<code>http://localhost:8443</code>，默认用户为<code>casuser/Mellon</code>。</p>
+<h3 id="使用外部容器运行"><a href="#使用外部容器运行" class="headerlink" title="使用外部容器运行"></a>使用外部容器运行</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] clean build</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，在<code>build/libs</code>目录下会生成<code>cas.war</code>，将war包放到外部tomcat的<code>webapps</code>目录下并启动tomcat，访问<code>http://localhost:8080</code>，默认用户为<code>casuser/Mellon</code>。</p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="获取内置资源"><a href="#获取内置资源" class="headerlink" title="获取内置资源"></a>获取内置资源</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] listTemplateViews</span><br></pre></td></tr></table></figure>
+
+<p>执行后，会在<code>build/cas-resources</code>下生成cas内置的资源，包括配置文件、页面等。</p>
+<p>其中<code>build/cas-resources/application.properties</code>为默认配置文件，如需修改，只需在<code>src/main/resources/application.yml</code>中覆盖对应配置即可。</p>
+<h2 id="使用http"><a href="#使用http" class="headerlink" title="使用http"></a>使用http</h2><p><strong><code>build.gradle</code>配置文件中<code>dependencies</code>添加配置</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 读取json配置</span><br><span class="line">    implementation &quot;org.apereo.cas:cas-server-support-json-service-registry:$&#123;project.&#x27;cas.version&#x27;&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改<code>src/main/resources/application.yml</code>，添加如下配置</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">ssl:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">cas:</span>  </span><br><span class="line">  <span class="attr">tgc:</span></span><br><span class="line">    <span class="attr">secure:</span> <span class="literal">false</span> <span class="comment"># 允许使用http协议发送cookie，默认为true</span></span><br><span class="line">  <span class="attr">service-registry:</span></span><br><span class="line">    <span class="attr">core:</span></span><br><span class="line">      <span class="attr">init-from-json:</span> <span class="literal">true</span> <span class="comment"># 允许从json中注册服务</span></span><br><span class="line">    <span class="attr">json:</span></span><br><span class="line">      <span class="attr">location:</span> <span class="string">classpath:/services</span> <span class="comment"># json文件地址</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>添加json配置文件</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] listTemplateViews</span><br></pre></td></tr></table></figure>
+
+<p>将<code>build/cas-resources/services</code>目录复制到<code>src/main/resources</code>下，并修改json文件中<code>serviceId</code>属性，添加<code>http</code>。</p>
+<h2 id="使用ssl"><a href="#使用ssl" class="headerlink" title="使用ssl"></a>使用ssl</h2><p><strong>使用keytool生成证书</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生成证书，别名：cas 算法：RSA key密码：123456 存储库密码：123456 存储库位置：D/cas/keystore</span></span><br><span class="line">keytool -genkeypair -<span class="built_in">alias</span> cas -keyalg RSA -keypass 123456 -storepass 123456 -keystore D:/cas/keystore</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出证书 别名：cas 存储库位置：D/cas/keystore 存储库密码：123456 导出的证书位置：D:/cas/cas.cer</span></span><br><span class="line">keytool -exportcert -<span class="built_in">alias</span> cas -keystore D:/cas/keystore -storepass 123456 -file D:/cas/cas.cer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将生成的证书导入jdk的证书库，jdk证书库的默认密码为changeit</span></span><br><span class="line">keytool -importcert -keystore D:/util/jdk/openJDK11/lib/security/cacerts -file D:/cas/cas.cer -<span class="built_in">alias</span> cas</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改cas配置文件</strong></p>
+<p>修改<code>src/main/resources/application.yml</code>，添加如下配置，用于覆盖掉默认的<code>ssl</code>配置。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">ssl:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">key-store:</span> <span class="string">file:D:/cas/keystore</span></span><br><span class="line">    <span class="attr">key-store-password:</span> <span class="number">123456</span></span><br><span class="line">    <span class="attr">key-password:</span> <span class="number">123456</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>设置域名映射</strong></p>
+<p>修改<code>C:\Windows\System32\drivers\etc\hosts</code>，添加域名映射<code>127.0.0.1  sso.rhythm.com</code>；</p>
+<p>刷新dns：<code>ipconfig /flushdns</code></p>
+<p><strong>重新编译运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] clean build run</span><br></pre></td></tr></table></figure>
+
+<p>启动成功后，访问<code>https://sso.rhythm.com:8443</code>。</p>
+<h2 id="使用jdbc验证账号密码"><a href="#使用jdbc验证账号密码" class="headerlink" title="使用jdbc验证账号密码"></a>使用jdbc验证账号密码</h2><p><strong><code>build.gradle</code>配置文件中<code>dependencies</code>添加配置</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// jdbc验证账号密码</span><br><span class="line">implementation &quot;org.apereo.cas:cas-server-support-jdbc:$&#123;project.&#x27;cas.version&#x27;&#125;&quot;</span><br><span class="line">implementation &quot;org.apereo.cas:cas-server-support-jdbc-drivers:$&#123;project.&#x27;cas.version&#x27;&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改<code>src/main/resources/application.yml</code>，添加如下配置，用于覆盖默认的安全策略</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cas:</span></span><br><span class="line">  <span class="attr">authn:</span></span><br><span class="line">    <span class="attr">jdbc:</span> <span class="comment"># 使用jdbc验证账号密码</span></span><br><span class="line">      <span class="attr">query:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">url:</span> <span class="string">jdbc:oracle:thin:@172.17.0.3:1521:ORCL</span></span><br><span class="line">          <span class="attr">driver-class:</span> <span class="string">oracle.jdbc.driver.OracleDriver</span></span><br><span class="line">          <span class="attr">dialect:</span> <span class="string">org.hibernate.dialect.Oracle10gDialect</span></span><br><span class="line">          <span class="attr">user:</span> <span class="string">zs</span></span><br><span class="line">          <span class="attr">password:</span> <span class="number">123456</span></span><br><span class="line">          <span class="attr">password-encoder:</span></span><br><span class="line">            <span class="attr">type:</span> <span class="string">DEFAULT</span></span><br><span class="line">            <span class="attr">encoding-algorithm:</span> <span class="string">MD5</span> <span class="comment"># 密码加密算法</span></span><br><span class="line">          <span class="attr">field-password:</span> <span class="string">PASSWORD_</span></span><br><span class="line">          <span class="attr">sql:</span> <span class="string">select</span> <span class="string">t.PASSWORD_</span> <span class="string">from</span> <span class="string">T_USER_</span> <span class="string">t</span> <span class="string">where</span> <span class="string">lower(t.ACCOUNT_)</span> <span class="string">=</span> <span class="string">lower(?)</span> <span class="string">and</span> <span class="string">t.STATUS_</span> <span class="string">=</span> <span class="string">&#x27;Y&#x27;</span></span><br><span class="line">    <span class="attr">accept:</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">false</span> <span class="comment"># 禁用默认的账户名密码</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>重新编译运行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew[.bat] clean build run</span><br></pre></td></tr></table></figure>
+
+<p>启动成功后，访问<code>https://localhost:8443</code>，并使用数据库中的账号密码登录。</p>
+<h2 id="自定义登录页面"><a href="#自定义登录页面" class="headerlink" title="自定义登录页面"></a>自定义登录页面</h2><p>在<code>src/main/resources/</code>下新建<code>templates/login</code>目录，在新建的<code>login</code>目录下新建登录页面<code>casLoginView.html</code>，页面使用的静态资源方位<code>/src/main/resources/static/</code>目录下，再参考默认的登录页面（<code>build/cas-resources/templates/login/casLoginView.html</code>）开发自己的登录页面。</p>
+<p>示例：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">xmlns:th</span>=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span> <span class="attr">type</span>=<span class="string">&quot;text/css&quot;</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">        *&#123; <span class="attribute">padding</span>:<span class="number">0</span>; <span class="attribute">margin</span>:<span class="number">0</span>; <span class="attribute">border</span>:<span class="number">0</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-tag">body</span> &#123; <span class="attribute">background</span>:<span class="number">#153767</span>; <span class="attribute">width</span>:<span class="number">100%</span>; &#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.box</span>&#123; <span class="attribute">background</span>:<span class="built_in">url</span>(<span class="string">images/bg_1.jpg</span>) no-repeat top center; <span class="attribute">width</span>:<span class="number">100%</span>; <span class="attribute">min-height</span>:<span class="number">610px</span>;_height:<span class="number">610px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span>&#123;<span class="attribute">width</span>:<span class="number">422px</span>;<span class="attribute">padding</span>:<span class="number">0</span> <span class="number">0</span> <span class="number">0</span> <span class="number">48px</span>; <span class="attribute">height</span>:<span class="number">200px</span>; <span class="attribute">position</span>:relative; <span class="attribute">margin</span>:<span class="number">0</span> auto;<span class="attribute">top</span>:<span class="number">250px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.wen</span>&#123; <span class="attribute">color</span>:<span class="number">#c9d9e4</span>; <span class="attribute">font-size</span>:<span class="number">12px</span>; <span class="attribute">font-weight</span>:bold; <span class="attribute">height</span>:<span class="number">72px</span>; <span class="attribute">overflow</span>:hidden;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.denglu</span>&#123; <span class="attribute">position</span>:absolute; <span class="attribute">cursor</span>: pointer; <span class="attribute">bottom</span>:<span class="number">40px</span>; <span class="attribute">right</span>:<span class="number">40px</span>; <span class="attribute">background</span>:<span class="built_in">url</span>(<span class="string">images/login_1.jpg</span>) no-repeat; <span class="attribute">width</span>:<span class="number">78px</span>; <span class="attribute">height</span>:<span class="number">60px</span>; <span class="attribute">text-indent</span>:-<span class="number">999px</span>; <span class="attribute">overflow</span>:hidden; <span class="attribute">margin</span>:<span class="number">0</span>; <span class="attribute">padding</span>:<span class="number">0</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span> <span class="selector-tag">ul</span>&#123; <span class="attribute">list-style</span>:none; <span class="attribute">padding-top</span>:<span class="number">5px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span> <span class="selector-tag">ul</span> <span class="selector-tag">li</span>&#123; <span class="attribute">float</span><span class="selector-pseudo">:left</span>; <span class="attribute">height</span>:<span class="number">30px</span>; <span class="attribute">width</span>:<span class="number">100%</span>; <span class="attribute">overflow</span>:hidden;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span> <span class="selector-tag">ul</span> <span class="selector-tag">li</span> <span class="selector-tag">span</span>&#123; <span class="attribute">float</span><span class="selector-pseudo">:left</span>; <span class="attribute">width</span>:<span class="number">60px</span>; <span class="attribute">line-height</span>:<span class="number">22px</span>; <span class="attribute">color</span>:<span class="number">#fff</span>; <span class="attribute">font-size</span>:<span class="number">12px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span> <span class="selector-tag">ul</span> <span class="selector-tag">li</span> <span class="selector-tag">input</span>&#123; <span class="attribute">border</span>:<span class="number">1px</span> solid <span class="number">#163865</span>; <span class="attribute">background</span>:<span class="number">#88adc0</span>; <span class="attribute">width</span>:<span class="number">115px</span>; <span class="attribute">height</span>:<span class="number">20px</span>; <span class="attribute">line-height</span>:<span class="number">17px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.login</span> <span class="selector-tag">ul</span> <span class="selector-tag">li</span> <span class="selector-tag">img</span>&#123;<span class="attribute">position</span>:absolute; <span class="attribute">bottom</span>:<span class="number">37px</span>; <span class="attribute">right</span>:<span class="number">145px</span>; <span class="attribute">width</span>:<span class="number">110px</span>; <span class="attribute">height</span>:<span class="number">30px</span>; <span class="attribute">line-height</span>:<span class="number">22px</span>;&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.STYLE1</span> &#123;<span class="attribute">font-size</span>: <span class="number">16px</span>&#125;</span></span><br><span class="line"><span class="language-css">        <span class="selector-class">.img_captcha</span>&#123;</span></span><br><span class="line"><span class="language-css">            <span class="attribute">cursor</span>: pointer;</span></span><br><span class="line"><span class="language-css">        &#125;</span></span><br><span class="line"><span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span> <span class="attr">src</span>=<span class="string">&quot;js/jquery.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        $(<span class="variable language_">document</span>).<span class="title function_">ready</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#captchawordimage&quot;</span>).<span class="title function_">click</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="title function_">reloadCaptchaImage</span>();</span></span><br><span class="line"><span class="language-javascript">            &#125;);</span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">reloadCaptchaImage</span>();</span></span><br><span class="line"><span class="language-javascript">        &#125;);</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">function</span> <span class="title function_">reloadCaptchaImage</span>(<span class="params"></span>)&#123;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> path = <span class="string">&quot;captcha?ct=&quot;</span>+ <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span></span><br><span class="line"><span class="language-javascript">            $(<span class="string">&quot;#captchawordimage&quot;</span>).<span class="title function_">attr</span>(<span class="string">&quot;src&quot;</span>, path);</span></span><br><span class="line"><span class="language-javascript">        &#125;</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;box&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;login&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;wen&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;STYLE1&quot;</span>&gt;</span>· <span class="tag">&lt;/<span class="name">span</span>&gt;</span>系统1<span class="tag">&lt;<span class="name">br</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;STYLE1&quot;</span>&gt;</span>·<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">            系统2 <span class="tag">&lt;<span class="name">br</span>&gt;</span> <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;STYLE1&quot;</span>&gt;</span>·<span class="tag">&lt;/<span class="name">span</span>&gt;</span> 系统3</span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">form</span> <span class="attr">id</span>=<span class="string">&quot;fm1&quot;</span> <span class="attr">action</span>=<span class="string">&quot;login&quot;</span> <span class="attr">th:action</span>=<span class="string">&quot;@&#123;login(service=$&#123;param.service&#125;)&#125;&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">span</span>&gt;</span>帐 户：<span class="tag">&lt;/<span class="name">span</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">&quot;width: 215px;&quot;</span> <span class="attr">id</span>=<span class="string">&quot;username&quot;</span> <span class="attr">name</span>=<span class="string">&quot;username&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">span</span>&gt;</span>密 码：<span class="tag">&lt;/<span class="name">span</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">&quot;width: 215px;&quot;</span> <span class="attr">type</span>=<span class="string">&quot;password&quot;</span> <span class="attr">id</span>=<span class="string">&quot;password&quot;</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;<span class="name">span</span>&gt;</span>验证码：<span class="tag">&lt;/<span class="name">span</span>&gt;</span> <span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">&quot;width: 80px;&quot;</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">id</span>=<span class="string">&quot;captchaword&quot;</span> <span class="attr">name</span>=<span class="string">&quot;captchaword&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;captchawordimage&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;图片验证码&quot;</span> <span class="attr">class</span>=<span class="string">&quot;img_captcha&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;lt&quot;</span> <span class="attr">th:value</span>=<span class="string">&quot;$&#123;loginTicket&#125;&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;execution&quot;</span> <span class="attr">th:value</span>=<span class="string">&quot;$&#123;flowExecutionKey&#125;&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;_eventId&quot;</span> <span class="attr">value</span>=<span class="string">&quot;submit&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">class</span>=<span class="string">&quot;denglu&quot;</span> <span class="attr">name</span>=<span class="string">&quot;submit&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;status&quot;</span> <span class="attr">style</span>=<span class="string">&quot;position: absolute; left: 110px; top: 161px; font-family: Verdana, 宋体, Arial, Sans; font-size: 10pt; color: red&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;errorPanel&quot;</span> <span class="attr">th:if</span>=<span class="string">&quot;$&#123;flowRequestContext.messageContext.hasErrorMessages()&#125;&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">p</span> <span class="attr">th:each</span>=<span class="string">&quot;message : $&#123;flowRequestContext.messageContext.allMessages&#125;&quot;</span></span></span><br><span class="line"><span class="tag">                   <span class="attr">th:utext</span>=<span class="string">&quot;#&#123;$&#123;message.text&#125;&#125;&quot;</span>&gt;</span></span><br><span class="line">                    Error Message Text</span><br><span class="line">                <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">th:if</span>=<span class="string">&quot;$&#123;param.ve + &#x27;&#x27;&#125; eq &#x27;1&#x27;&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">p</span>&gt;</span>验证码错误！<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="注入bean到spring容器"><a href="#注入bean到spring容器" class="headerlink" title="注入bean到spring容器"></a>注入bean到spring容器</h2><p>在<code>src/main/java</code>目录下新建bean后，不会注入到spring容器中，需要在<code>src/main/resources/META-INF/spring.factories</code>文件中进行配置。</p>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\</span><br><span class="line">  org.apereo.cas.config.CasOverlayOverrideConfiguration,\</span><br><span class="line">  com.rhythm.controller.CaptchaController,\</span><br><span class="line">  com.rhythm.filters.CaptchaValidateFilter,\</span><br><span class="line">  com.rhythm.config.FilterConfig</span><br></pre></td></tr></table></figure>
+
+<h1 id="cas客户端"><a href="#cas客户端" class="headerlink" title="cas客户端"></a>cas客户端</h1><p><strong>java-client：</strong><code>https://github.com/apereo/java-cas-client</code></p>
+<h2 id="使用web-xml进行配置"><a href="#使用web-xml进行配置" class="headerlink" title="使用web.xml进行配置"></a>使用<code>web.xml</code>进行配置</h2><h3 id="引入maven依赖"><a href="#引入maven依赖" class="headerlink" title="引入maven依赖"></a>引入maven依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.jasig.cas.client<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cas-client-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;java.cas.client.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="web-xml中添加配置"><a href="#web-xml中添加配置" class="headerlink" title="web.xml中添加配置"></a>web.xml中添加配置</h3><p><strong>配置身份验证过滤器<code>AuthenticationFilter</code></strong></p>
+<ul>
+<li>casServerUrlPrefix：指定cas server的地址</li>
+<li>service：指定验证成功后跳转的地址</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Authentication Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.apereo.cas.client.authentication.AuthenticationFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>casServerUrlPrefix<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>https://battags.ad.ess.rutgers.edu:8443/cas<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>service<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>http://www.acme-client.com<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Authentication Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置票据验证过滤器<code>TicketValidationFilter</code></strong></p>
+<ul>
+<li>casServerUrlPrefix：指定cas server的地址</li>
+<li>service：指定验证成功后跳转的地址</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.apereo.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>casServerUrlPrefix<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>https://battags.ad.ess.rutgers.edu:8443/cas<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>service<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>http://www.acme-client.com<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置请求包装过滤器<code>HttpServletRequestWrapperFilter</code></strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS HttpServletRequest Wrapper Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.apereo.cas.client.HttpServletRequestWrapperFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS HttpServletRequest Wrapper Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置断言<code>AssertionThreadLocalFilter</code></strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Assertion Thread Local Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.apereo.cas.client.AssertionThreadLocalFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Assertion Thread Local Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置单点登出过滤器<code>SingleSignOutFilter</code>和监听器<code>SingleSignOutHttpSessionListener</code></strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Single Sign Out Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.apereo.cas.client.session.SingleSignOutFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Single Sign Out Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.apereo.cas.client.session.SingleSignOutHttpSessionListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用spring进行配置"><a href="#使用spring进行配置" class="headerlink" title="使用spring进行配置"></a>使用spring进行配置</h2><p>在<code>web.xml</code>配置的基础上，可以使用<code>spring ioc</code>配置来代替<code>AuthenticationFilter</code>和<code>TicketValidationFilter</code>。</p>
+<p><strong>注册<code>AuthenticationFilter</code>和<code>TicketValidationFilter</code>Bean</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CasConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Bean(&quot;authenticationFilter&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> AuthenticationFilter <span class="title function_">authenticationFilter</span><span class="params">(ParamService paramService)</span> &#123;</span><br><span class="line">        <span class="type">AuthenticationFilter</span> <span class="variable">authenticationFilter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AuthenticationFilter</span>();</span><br><span class="line">        authenticationFilter.setCasServerUrlPrefix(<span class="string">&quot;https://battags.ad.ess.rutgers.edu:8443/cas&quot;</span>);</span><br><span class="line">        authenticationFilter.setService(<span class="string">&quot;http://www.acme-client.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> authenticationFilter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean(&quot;ticketValidationFilter&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Cas20ProxyReceivingTicketValidationFilter <span class="title function_">validationFilter</span><span class="params">(ParamService paramService)</span> &#123;</span><br><span class="line">paramService.getParamValueAsString(<span class="string">&quot;SSO_SERVER_PREFIX_URL&quot;</span>);</span><br><span class="line">        <span class="type">Cas20ProxyReceivingTicketValidationFilter</span> <span class="variable">validationFilter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Cas20ProxyReceivingTicketValidationFilter</span>();</span><br><span class="line">        validationFilter.setService(<span class="string">&quot;http://www.acme-client.com&quot;</span>);</span><br><span class="line">        <span class="type">Cas20ServiceTicketValidator</span> <span class="variable">validator</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Cas20ServiceTicketValidator</span>(<span class="string">&quot;https://battags.ad.ess.rutgers.edu:8443/cas&quot;</span>);</span><br><span class="line">        validationFilter.setTicketValidator(validator);</span><br><span class="line">        <span class="keyword">return</span> validationFilter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改web.xml配置</strong></p>
+<p><code>web.xml</code>中删除<code>AuthenticationFilter</code>和<code>TicketValidationFilter</code>相关配置，并添加如下配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Authentication Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.DelegatingFilterProxy<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>targetBeanName<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>authenticationFilter<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Authentication Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.springframework.web.filter.DelegatingFilterProxy<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>targetBeanName<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>ticketValidationFilter<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="使用springboot进行配置"><a href="#使用springboot进行配置" class="headerlink" title="使用springboot进行配置"></a>使用springboot进行配置</h2><p><strong>maven依赖</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.jasig.cas.client<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cas-client-support-springboot<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;java.cas.client.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>application.yml配置</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cas:</span></span><br><span class="line">  <span class="attr">server-url-prefix:</span> <span class="string">http://localhost:8443/cas</span></span><br><span class="line">  <span class="attr">server-login-url:</span> <span class="string">http://localhost:8443/cas/login</span></span><br><span class="line">  <span class="attr">client-host-url:</span> <span class="string">http://localhost:8080</span></span><br><span class="line">  <span class="attr">validation-type:</span> <span class="string">CAS</span></span><br><span class="line">  <span class="attr">single-logout:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>其他配置</strong></p>
+<p>启动类上添加<code>@EnableCasClient</code>注解</p>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2022/09/08/microservice/tars%E5%85%A5%E9%97%A8/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>上一页</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime" title="更新时间"></i>
+              2022-09-09 09:37:53
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="分类"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/" title="单点登录">
+                        <b>#</b> 单点登录
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags" title="标签"></i>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/sso/" title="sso">
+                        <b>#</b> sso
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag">
+                      <a href="/tags/cas/" title="cas">
+                        <b>#</b> cas
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2022/10/17/middleware/ESAPI%E5%85%A5%E9%97%A8/" target="_self">
+                <span>下一页</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">目录</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CAS%E5%8D%8F%E8%AE%AE"><span class="toc-text">CAS协议</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC"><span class="toc-text">版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E4%BB%A3%E7%A0%81"><span class="toc-text">获取代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C"><span class="toc-text">运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%86%85%E9%83%A8%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C"><span class="toc-text">使用内部容器运行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%96%E9%83%A8%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C"><span class="toc-text">使用外部容器运行</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-text">配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%86%85%E7%BD%AE%E8%B5%84%E6%BA%90"><span class="toc-text">获取内置资源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8http"><span class="toc-text">使用http</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8ssl"><span class="toc-text">使用ssl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8jdbc%E9%AA%8C%E8%AF%81%E8%B4%A6%E5%8F%B7%E5%AF%86%E7%A0%81"><span class="toc-text">使用jdbc验证账号密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2"><span class="toc-text">自定义登录页面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5bean%E5%88%B0spring%E5%AE%B9%E5%99%A8"><span class="toc-text">注入bean到spring容器</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cas%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">cas客户端</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8web-xml%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="toc-text">使用web.xml进行配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E5%85%A5maven%E4%BE%9D%E8%B5%96"><span class="toc-text">引入maven依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web-xml%E4%B8%AD%E6%B7%BB%E5%8A%A0%E9%85%8D%E7%BD%AE"><span class="toc-text">web.xml中添加配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8spring%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="toc-text">使用spring进行配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8springboot%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="toc-text">使用springboot进行配置</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+            <i class="iconfont icon-github"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2023 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>首次搜索，正在载入索引文件，请稍后……<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>没有找到内容，请尝试更换检索词。<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>未找到search.xml文件，具体请参考：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>请求失败，尝试重新刷新页面或稍后重试。<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + cas%E5%85%A5%E9%97%A8 + '&url=' + https%3A%2F%2Fpeimouren.github.io%2F2022%2F09%2F09%2Fsso%2Fcas%25E5%2585%25A5%25E9%2597%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=https://peimouren.github.io/2022/09/09/sso/cas%E5%85%A5%E9%97%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
